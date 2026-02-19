@@ -14,6 +14,7 @@ import { Underline } from "@tiptap/extension-underline";
 import { Markdown } from "tiptap-markdown";
 // extensions
 import {
+  AttachmentExtension,
   CustomCalloutExtension,
   CustomCodeBlockExtension,
   CustomCodeInlineExtension,
@@ -134,6 +135,9 @@ export const CoreEditorExtensions = (args: TArguments): Extensions => {
       flaggedExtensions,
       fileHandler,
       extendedEditorProps,
+    }),
+    AttachmentExtension({
+      fileHandler,
     }),
     UniqueID.configure({
       provider,
