@@ -7,8 +7,8 @@
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 // plane imports
 import type { ADDITIONAL_EXTENSIONS } from "@plane/utils";
-import { CORE_EXTENSIONS } from "@plane/utils";
 // extensions
+import { CORE_EXTENSIONS } from "@/constants/extension";
 import { getImageBlockId } from "@/extensions/custom-image/utils";
 // plane editor imports
 import { ADDITIONAL_ASSETS_META_DATA_RECORD } from "@/plane-editor/constants/assets";
@@ -41,6 +41,17 @@ export const CORE_ASSETS_META_DATA_RECORD: Partial<
       src: attrs?.src,
       type: CORE_EXTENSIONS.CUSTOM_IMAGE,
     };
+  },
+  [CORE_EXTENSIONS.ATTACHMENT]: (attrs) => {
+    if (!attrs?.src) return;
+    return {
+      href: `#attachment-${attrs?.id}`,
+      id: attrs?.id,
+      name: attrs?.name || `attachment-${attrs?.id}`,
+      size: attrs?.size || 0,
+      src: attrs?.src,
+      type: CORE_EXTENSIONS.ATTACHMENT,
+    } as TEditorAsset;
   },
   ...ADDITIONAL_ASSETS_META_DATA_RECORD,
 };

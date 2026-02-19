@@ -4,4 +4,15 @@
  * See the LICENSE file for details.
  */
 
-export type TAdditionalEditorAsset = never;
+import { CORE_EXTENSIONS } from "@/constants/extension";
+
+export type TEditorAttachmentAsset = {
+    href: string;
+    id: string;
+    name: string;
+    size: number;
+    src: string;
+    type: CORE_EXTENSIONS.ATTACHMENT;
+};
+
+export type TAdditionalEditorAsset = TEditorAttachmentAsset;

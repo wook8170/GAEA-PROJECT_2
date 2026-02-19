@@ -2657,6 +2657,7 @@ export default {
       assets: {
         label: "자산",
         download_button: "다운로드",
+        attachments_title: "첨부파일",
         empty_state: {
           title: "이미지가 없습니다",
           description: "이미지를 추가하여 여기에서 확인하세요.",

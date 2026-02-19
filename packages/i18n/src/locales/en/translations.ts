@@ -2542,6 +2542,7 @@ export default {
       assets: {
         label: "Assets",
         download_button: "Download",
+        attachments_title: "Attachments",
         empty_state: {
           title: "Missing images",
           description: "Add images to see them here.",
