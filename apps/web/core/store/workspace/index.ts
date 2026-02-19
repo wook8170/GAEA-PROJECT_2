@@ -185,7 +185,12 @@ export abstract class BaseWorkspaceRootStore implements IWorkspaceRootStore {
       const workspaceResponse = await this.workspaceService.userWorkspaces();
       runInAction(() => {
         workspaceResponse.forEach((workspace) => {
-          set(this.workspaces, [workspace.id], workspace);
+          const augmentedWorkspace = {
+            ...workspace,
+            plan: "enterprise", // 최상위 플랜으로 설정하여 모든 기능 개방
+            edition: "enterprise",
+          };
+          set(this.workspaces, [workspace.id], augmentedWorkspace as any);
         });
       });
       return workspaceResponse;

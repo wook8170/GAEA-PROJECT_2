@@ -97,7 +97,10 @@ function PageDetailsPage({ params }: Route.ComponentProps) {
           return `/${workspaceSlug}/projects/${projectId}/pages`;
         }
       },
-      updateDescription: updateDescription ?? (async () => {}),
+      onStateChange: (state) => {
+        // handle state change if needed
+      },
+      updateDescription: updateDescription ?? (async () => { }),
     }),
     [createPage, fetchEntityCallback, id, updateDescription, workspaceSlug, projectId]
   );

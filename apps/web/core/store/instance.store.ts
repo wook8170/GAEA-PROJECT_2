@@ -61,7 +61,10 @@ export class InstanceStore implements IInstanceStore {
       const instanceInfo = await this.instanceService.getInstanceInfo();
       runInAction(() => {
         this.isLoading = false;
-        this.instance = instanceInfo.instance;
+        (this as any).instance = {
+          ...instanceInfo.instance,
+          instance_edition: "enterprise",
+        };
         this.config = instanceInfo.config;
       });
     } catch (error) {

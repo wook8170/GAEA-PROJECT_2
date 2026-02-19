@@ -3,13 +3,19 @@ FROM node:22-alpine
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY . .
-RUN corepack enable pnpm && pnpm add -g turbo
-RUN pnpm install
-EXPOSE 3003
+# 루트 핵심 파일 복사
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .prettierrc ./
+# 알맹이(dist, node_modules) 포함 전체 복사
+COPY packages ./packages
+COPY apps/live ./apps/live
 
+RUN corepack enable pnpm
+# 링크 재구성
+RUN pnpm install --offline --frozen-lockfile || pnpm install --frozen-lockfile
+
+EXPOSE 3003
+ENV NODE_ENV=development
 ENV TURBO_TELEMETRY_DISABLED=1
 
-VOLUME [ "/app/node_modules", "/app/live/node_modules"]
-
-CMD ["pnpm","dev", "--filter=live"]
+# 절대 경로를 사용하여 실행 (오차 제로)
+CMD ["node", "--env-file=/app/apps/live/.env", "/app/apps/live/dist/start.mjs"]

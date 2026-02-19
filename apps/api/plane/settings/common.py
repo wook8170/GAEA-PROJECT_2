@@ -218,7 +218,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static-assets", "collected-static")
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 # Media Settings
-MEDIA_ROOT = "mediafiles"
+MEDIA_ROOT = "/code/media"
 MEDIA_URL = "/media/"
 
 # Internationalization

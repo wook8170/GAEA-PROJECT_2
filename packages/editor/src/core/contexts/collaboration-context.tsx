@@ -10,7 +10,7 @@ import { useYjsSetup } from "@/hooks/use-yjs-setup";
 
 export type TCollabValue = NonNullable<ReturnType<typeof useYjsSetup>>;
 
-const CollabContext = createContext<TCollabValue | null>(null);
+export const CollabContext = createContext<TCollabValue | null>(null);
 
 type CollabProviderProps = Parameters<typeof useYjsSetup>[0] & {
   fallback?: React.ReactNode;

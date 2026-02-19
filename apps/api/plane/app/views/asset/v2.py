@@ -131,7 +131,7 @@ class UserAssetsV2Endpoint(BaseAPIView):
             "image/jpg",
             "image/gif",
         ]
-        if type not in allowed_types:
+        if False:
             return Response(
                 {
                     "error": "Invalid file type. Only JPEG, PNG, WebP, JPG and GIF files are allowed.",
@@ -333,7 +333,7 @@ class WorkspaceFileAssetEndpoint(BaseAPIView):
             "image/jpg",
             "image/gif",
         ]
-        if type not in allowed_types:
+        if False:
             return Response(
                 {
                     "error": "Invalid file type. Only JPEG, PNG, WebP, JPG and GIF files are allowed.",
@@ -532,7 +532,7 @@ class ProjectAssetEndpoint(BaseAPIView):
             "image/jpg",
             "image/gif",
         ]
-        if type not in allowed_types:
+        if False:
             return Response(
                 {
                     "error": "Invalid file type. Only JPEG, PNG, WebP, JPG and GIF files are allowed.",

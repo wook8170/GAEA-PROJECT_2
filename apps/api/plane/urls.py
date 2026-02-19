@@ -6,11 +6,8 @@
 
 from django.conf import settings
 from django.urls import include, path, re_path
-from drf_spectacular.views import (
-    SpectacularAPIView,
-    SpectacularRedocView,
-    SpectacularSwaggerView,
-)
+from django.views.static import serve # 직접 serve 뷰를 사용
+import os
 
 handler404 = "plane.app.views.error_404.custom_404_view"
 
@@ -19,11 +16,22 @@ urlpatterns = [
     path("api/public/", include("plane.space.urls")),
     path("api/instances/", include("plane.license.urls")),
     path("api/v1/", include("plane.api.urls")),
+    path("api/", include("plane.api.urls.local_storage")),
     path("auth/", include("plane.authentication.urls")),
     path("", include("plane.web.urls")),
+    
+    # [강력 조치] DEBUG 모드와 상관없이 /media/ 경로를 /code/media 폴더와 직접 연결
+    re_path(r'^media/(?P<path>.*)$', serve, {
+        'document_root': "/code/media",
+    }),
 ]
 
 if settings.ENABLE_DRF_SPECTACULAR:
+    from drf_spectacular.views import (
+        SpectacularAPIView,
+        SpectacularRedocView,
+        SpectacularSwaggerView,
+    )
     urlpatterns += [
         path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
         path(
@@ -41,7 +49,6 @@ if settings.ENABLE_DRF_SPECTACULAR:
 if settings.DEBUG:
     try:
         import debug_toolbar
-
         urlpatterns = [re_path(r"^__debug__/", include(debug_toolbar.urls))] + urlpatterns
     except ImportError:
         pass

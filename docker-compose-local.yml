@@ -29,14 +29,7 @@ services:
     networks:
       - dev_env
     entrypoint: >
-      /bin/sh -c "
-      mkdir -p /export/${AWS_S3_BUCKET_NAME} &&
-      minio server /export --console-address ':9090' &
-      sleep 5 &&
-      mc alias set myminio http://localhost:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} &&
-      mc mb myminio/${AWS_S3_BUCKET_NAME} -p || true
-      && tail -f /dev/null
-      "
+      /bin/sh -c " mkdir -p /export/${AWS_S3_BUCKET_NAME} && minio server /export --console-address ':9090' & sleep 5 && mc alias set myminio http://localhost:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} && mc mb myminio/${AWS_S3_BUCKET_NAME} -p || true && tail -f /dev/null "
     volumes:
       - uploads:/export
     env_file:
@@ -106,19 +99,21 @@ services:
   #     - worker
   #     - web
 
-  # live:
-  #   build:
-  #     context: .
-  #     dockerfile: ./live/Dockerfile.dev
-  #   restart: unless-stopped
-  #   networks:
-  #     - dev_env
-  #   volumes:
-  #     - ./live:/app/live
-  #   depends_on:
-  #     - api
-  #     - worker
-  #     - web
+  live:
+    build:
+      context: .
+      dockerfile: ./apps/live/Dockerfile.dev
+    restart: unless-stopped
+    networks:
+      - dev_env
+    # volumes:
+    env_file:
+      - ./apps/live/.env
+    ports:
+      - "3003:3100"
+    depends_on:
+      - api
+      - worker
 
   api:
     build:
@@ -140,6 +135,8 @@ services:
       - plane-mq
     ports:
       - "8000:8000"
+    extra_hosts:
+      - "localhost:host-gateway"
 
   worker:
     build:
@@ -196,7 +193,6 @@ services:
     depends_on:
       - plane-db
       - plane-redis
-
   # proxy:
   #   build:
   #     context: ./apps/proxy
@@ -223,6 +219,7 @@ volumes:
   uploads:
   pgdata:
   rabbitmq_data:
+
 
 networks:
   dev_env:

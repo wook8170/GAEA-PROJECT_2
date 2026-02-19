@@ -35,12 +35,15 @@ export const onAuthenticate = async ({
   let cookie: string | undefined = undefined;
   let userId: string | undefined = undefined;
 
+  let color: string | undefined = undefined;
+
   // Extract cookie (fallback to request headers) and userId from token (for scenarios where
   // the cookies are not passed in the request headers)
   try {
     const parsedToken = JSON.parse(token) as TUserDetails;
     userId = parsedToken.id;
     cookie = parsedToken.cookie;
+    color = parsedToken.color;
   } catch (error) {
     const appError = new AppError(error, {
       context: { operation: "onAuthenticate" },
@@ -69,10 +72,19 @@ export const onAuthenticate = async ({
   return await handleAuthentication({
     cookie: context.cookie,
     userId: context.userId,
+    color,
   });
 };
 
-export const handleAuthentication = async ({ cookie, userId }: { cookie: string; userId: string }) => {
+export const handleAuthentication = async ({
+  cookie,
+  userId,
+  color,
+}: {
+  cookie: string;
+  userId: string;
+  color?: string;
+}) => {
   // fetch current user info
   try {
     const userService = new UserService();
@@ -85,6 +97,8 @@ export const handleAuthentication = async ({ cookie, userId }: { cookie: string;
       user: {
         id: user.id,
         name: user.display_name,
+        color: color || "#3f76ff",
+        avatar: user.avatar_url,
       },
     };
   } catch (error) {

@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import React, { useMemo } from "react";
+import React, { useMemo, useContext } from "react";
 // plane imports
 import { cn } from "@plane/utils";
 // components
@@ -12,7 +12,7 @@ import { PageRenderer } from "@/components/editors";
 // constants
 import { DEFAULT_DISPLAY_CONFIG } from "@/constants/config";
 // contexts
-import { CollaborationProvider, useCollaboration } from "@/contexts/collaboration-context";
+import { CollaborationProvider, useCollaboration, CollabContext } from "@/contexts/collaboration-context";
 // helpers
 import { getEditorClassNames } from "@/helpers/common";
 // hooks
@@ -140,6 +140,11 @@ function CollaborativeDocumentEditorInner(props: ICollaborativeDocumentEditorPro
 // Outer component that provides collaboration context
 function CollaborativeDocumentEditor(props: ICollaborativeDocumentEditorProps) {
   const { id, realtimeConfig, serverHandler, user } = props;
+  // check if collaboration context is already provided
+  const ctx = useContext(CollabContext);
+  if (ctx) {
+    return <CollaborativeDocumentEditorInner {...props} />;
+  }
 
   const token = useMemo(() => JSON.stringify(user), [user]);
 

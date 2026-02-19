@@ -45,6 +45,7 @@ export type TUserDetails = {
   id: string;
   name: string;
   cookie?: string;
+  avatar?: string;
 };
 
 export type TRealtimeConfig = {

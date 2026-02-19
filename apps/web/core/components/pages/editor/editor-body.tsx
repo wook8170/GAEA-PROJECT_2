@@ -8,10 +8,13 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { observer } from "mobx-react";
 // plane imports
 import { LIVE_BASE_PATH, LIVE_BASE_URL } from "@plane/constants";
-import { CollaborativeDocumentEditorWithRef } from "@plane/editor";
+import {
+  CollaborativeDocumentEditorWithRef,
+  CollaborationProvider,
+  type CollaborationState,
+  type EditorRefApi,
+} from "@plane/editor";
 import type {
-  CollaborationState,
-  EditorRefApi,
   EditorTitleRefApi,
   TAIMenuProps,
   TDisplayConfig,
@@ -230,6 +233,8 @@ export const PageEditorBody = observer(function PageEditorBody(props: Props) {
     }
   );
 
+  const authToken = useMemo(() => JSON.stringify(userConfig), [userConfig]);
+
   const isPageLoading = pageId === undefined || !realtimeConfig;
 
   if (isPageLoading) return <PageContentLoader className={blockWidthClassName} />;
@@ -268,7 +273,7 @@ export const PageEditorBody = observer(function PageEditorBody(props: Props) {
           </div>
           <CollaborativeDocumentEditorWithRef
             editable={isContentEditable}
-            id={pageId}
+            id={pageId!}
             fileHandler={config.fileHandler}
             handleEditorReady={handleEditorReady}
             ref={editorForwardRef}

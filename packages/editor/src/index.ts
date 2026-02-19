@@ -22,8 +22,12 @@ export * from "@/helpers/yjs-utils";
 export { CORE_EXTENSIONS } from "@/constants/extension";
 export { ADDITIONAL_EXTENSIONS } from "@/plane-editor/constants/extensions";
 
+// contexts
+export { CollaborationProvider, useCollaboration, CollabContext } from "@/contexts";
+
 // types
 export * from "@/types";
+export type { CollaborationState, TServerHandler, CollabStage } from "@/types/collaboration";
 
 // additional exports
 export { TrailingNode } from "./core/extensions/trailing-node";
