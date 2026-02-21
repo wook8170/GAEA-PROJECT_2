@@ -21,6 +21,7 @@ export type GanttChartBlocksProps = {
   showAllBlocks: boolean;
   selectionHelpers: TSelectionHelper;
   ganttContainerRef: React.RefObject<HTMLDivElement>;
+  itemsContainerWidth?: number;
 };
 
 export function GanttChartRowList(props: GanttChartBlocksProps) {
@@ -32,18 +33,33 @@ export function GanttChartRowList(props: GanttChartBlocksProps) {
     showAllBlocks,
     selectionHelpers,
     ganttContainerRef,
+    itemsContainerWidth,
   } = props;
 
   return (
-    <div className="absolute top-0 left-0 min-w-full w-max">
+    <div
+      className="absolute top-0 left-0"
+      style={{
+        width: itemsContainerWidth ? `${itemsContainerWidth}px` : "auto",
+        minWidth: itemsContainerWidth ? `${itemsContainerWidth}px` : "100%",
+      }}
+    >
       {blockIds?.map((blockId) => (
         <>
           <RenderIfVisible
             root={ganttContainerRef}
             horizontalOffset={100}
             verticalOffset={200}
-            classNames="relative min-w-full w-max"
-            placeholderChildren={<div className="w-full pointer-events-none" style={{ height: `${BLOCK_HEIGHT}px` }} />}
+            classNames="relative"
+            placeholderChildren={
+              <div
+                className="pointer-events-none"
+                style={{
+                  height: `${BLOCK_HEIGHT}px`,
+                  width: itemsContainerWidth ? `${itemsContainerWidth}px` : "auto",
+                }}
+              />
+            }
             shouldRecordHeights={false}
           >
             <BlockRow
@@ -55,6 +71,7 @@ export function GanttChartRowList(props: GanttChartBlocksProps) {
               enableAddBlock={typeof enableAddBlock === "function" ? enableAddBlock(blockId) : enableAddBlock}
               selectionHelpers={selectionHelpers}
               ganttContainerRef={ganttContainerRef}
+              width={itemsContainerWidth}
             />
           </RenderIfVisible>
         </>

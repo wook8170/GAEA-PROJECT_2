@@ -26,10 +26,19 @@ type Props = {
   enableAddBlock: boolean;
   selectionHelpers: TSelectionHelper;
   ganttContainerRef: React.RefObject<HTMLDivElement>;
+  width?: number;
 };
 
 export const BlockRow = observer(function BlockRow(props: Props) {
-  const { blockId, showAllBlocks, blockUpdateHandler, handleScrollToBlock, enableAddBlock, selectionHelpers } = props;
+  const {
+    blockId,
+    showAllBlocks,
+    blockUpdateHandler,
+    handleScrollToBlock,
+    enableAddBlock,
+    selectionHelpers,
+    width,
+  } = props;
   // states
   const [isHidden, setIsHidden] = useState(false);
   const [isBlockHiddenOnLeft, setIsBlockHiddenOnLeft] = useState(false);
@@ -46,8 +55,8 @@ export const BlockRow = observer(function BlockRow(props: Props) {
 
     setIsBlockHiddenOnLeft(
       !!block.position?.marginLeft &&
-        !!block.position?.width &&
-        intersectionRoot.scrollLeft > block.position.marginLeft + block.position.width
+      !!block.position?.width &&
+      intersectionRoot.scrollLeft > block.position.marginLeft + block.position.width
     );
 
     // Observe if the block is visible on the chart
@@ -81,39 +90,42 @@ export const BlockRow = observer(function BlockRow(props: Props) {
 
   return (
     <div
-      className="relative min-w-full w-max"
+      className="relative"
       onMouseEnter={() => updateActiveBlockId(blockId)}
       onMouseLeave={() => updateActiveBlockId(null)}
       style={{
         height: `${BLOCK_HEIGHT}px`,
+        width: width ? `${width}px` : "auto",
+        minWidth: width ? `${width}px` : "100%",
       }}
     >
       <div
-        className={cn("relative h-full bg-layer-transparent hover:bg-layer-transparent-hover", {
-          "rounded-l-sm border border-r-0 border-accent-strong": getIsIssuePeeked(block.data.id),
+        className={cn("relative bg-layer-transparent", {
+          "border-y border-l border-accent-strong h-[calc(100%+2px)]": getIsIssuePeeked(block.data.id),
+          "h-full": !getIsIssuePeeked(block.data.id),
           "bg-layer-transparent-hover": isBlockHoveredOn,
           "bg-accent-primary/5 hover:bg-accent-primary/10": isBlockSelected,
           "bg-accent-primary/10": isBlockSelected && isBlockHoveredOn,
-          "border border-r-0 border-strong-1": isBlockFocused,
+          "border-y border-l border-strong-1": isBlockFocused,
         })}
       >
         {isBlockVisibleOnChart
           ? isHidden && (
-              <button
-                type="button"
-                className="sticky z-[5] grid h-8 w-8 translate-y-1.5 cursor-pointer place-items-center rounded-sm border border-strong bg-layer-1 text-secondary hover:text-primary"
-                style={{
-                  left: `${SIDEBAR_WIDTH + 4}px`,
-                }}
-                onClick={() => handleScrollToBlock(block)}
-              >
-                <ArrowRight
-                  className={cn("h-3.5 w-3.5", {
-                    "rotate-180": isBlockHiddenOnLeft,
-                  })}
-                />
-              </button>
-            )
+            <button
+              type="button"
+              className="sticky z-[5] grid h-8 w-8 translate-y-1.5 cursor-pointer place-items-center rounded-sm border border-strong bg-layer-1 text-secondary hover:text-primary"
+              style={{
+                left: `${SIDEBAR_WIDTH + 4}px`,
+              }}
+              onClick={() => handleScrollToBlock(block)}
+            >
+              <ArrowRight
+                className={cn("h-3.5 w-3.5", {
+                  "rotate-180": isBlockHiddenOnLeft,
+                })}
+              />
+            </button>
+          )
           : enableAddBlock && <ChartAddBlock block={block} blockUpdateHandler={blockUpdateHandler} />}
       </div>
     </div>

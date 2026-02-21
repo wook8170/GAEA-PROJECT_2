@@ -218,6 +218,7 @@ export const GanttChartMainContent = observer(function GanttChartMainContent(pro
                       showAllBlocks={showAllBlocks}
                       selectionHelpers={helpers}
                       ganttContainerRef={ganttContainerRef}
+                      itemsContainerWidth={itemsContainerWidth}
                     />
                     <TimelineDependencyPaths isEpic={isEpic} />
                     <TimelineDraggablePath />
