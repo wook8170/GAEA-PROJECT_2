@@ -8,12 +8,11 @@ import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { createPortal } from "react-dom";
-// plane imports
 // components
-import type { ChartDataType, IBlockUpdateData, IBlockUpdateDependencyData, TGanttViews } from "@plane/types";
-import { cn } from "@plane/utils";
 import { GanttChartHeader, GanttChartMainContent } from "@/components/gantt-chart";
+import type { ChartDataType, IBlockUpdateData, IBlockUpdateDependencyData, TGanttViews } from "@plane/types";
 // helpers
+import { cn } from "@plane/utils";
 // hooks
 import { useUserProfile } from "@/hooks/store/user";
 import { useTimeLineChartStore } from "@/hooks/use-timeline-chart";
@@ -22,6 +21,12 @@ import { SIDEBAR_WIDTH } from "../constants";
 import { currentViewDataWithView } from "../data";
 import type { IMonthBlock, IMonthView, IWeekBlock } from "../views";
 import { getNumberOfDaysBetweenTwoDates, monthView, quarterView, weekView } from "../views";
+
+const timelineViewHelpers = {
+  week: weekView,
+  month: monthView,
+  quarter: quarterView,
+};
 
 type ChartViewRootProps = {
   border: boolean;
@@ -46,12 +51,6 @@ type ChartViewRootProps = {
   quickAdd?: React.ReactNode | undefined;
   showToday: boolean;
   isEpic?: boolean;
-};
-
-const timelineViewHelpers = {
-  week: weekView,
-  month: monthView,
-  quarter: quarterView,
 };
 
 export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRootProps) {
@@ -97,10 +96,7 @@ export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRoo
 
   const updateCurrentViewRenderPayload = (side: null | "left" | "right", view: TGanttViews, targetDate?: Date) => {
     const selectedCurrentView: TGanttViews = view;
-    const selectedCurrentViewData: ChartDataType | undefined =
-      selectedCurrentView && selectedCurrentView === currentViewData?.key
-        ? currentViewData
-        : currentViewDataWithView(view);
+    const selectedCurrentViewData = selectedCurrentView && selectedCurrentView === currentViewData?.key ? currentViewData : currentViewDataWithView(view);
 
     if (selectedCurrentViewData === undefined) return;
 
@@ -111,7 +107,6 @@ export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRoo
       b: IWeekBlock[] | IMonthView | IMonthBlock[]
     ) => IWeekBlock[] | IMonthView | IMonthBlock[];
 
-    // updating the prevData, currentData and nextData
     if (currentRender.payload) {
       updateCurrentViewData(currentRender.state);
 
@@ -141,10 +136,8 @@ export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRoo
 
   const handleToday = () => updateCurrentViewRenderPayload(null, currentView);
 
-  // handling the scroll positioning from left and right
   useEffect(() => {
     handleToday();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateItemsContainerWidth = (width: number) => {
@@ -156,7 +149,6 @@ export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRoo
   const updateCurrentLeftScrollPosition = (width: number) => {
     const scrollContainer = document.querySelector("#gantt-container") as HTMLDivElement;
     if (!scrollContainer) return;
-
     scrollContainer.scrollLeft = width + scrollContainer?.scrollLeft;
   };
 
@@ -169,11 +161,7 @@ export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRoo
     let daysDifference: number = 0;
     daysDifference = getNumberOfDaysBetweenTwoDates(currentState.data.startDate, date);
 
-    scrollWidth =
-      Math.abs(daysDifference) * currentState.data.dayWidth -
-      (clientVisibleWidth / 2 - currentState.data.dayWidth) +
-      SIDEBAR_WIDTH / 2;
-
+    scrollWidth = Math.abs(daysDifference) * currentState.data.dayWidth - (clientVisibleWidth / 2 - currentState.data.dayWidth) + SIDEBAR_WIDTH / 2;
     scrollContainer.scrollLeft = scrollWidth;
   };
 
@@ -222,4 +210,7 @@ export const ChartViewRoot = observer(function ChartViewRoot(props: ChartViewRoo
   );
 
   return fullScreenMode && portalContainer ? createPortal(content, portalContainer) : content;
+
 });
+
+

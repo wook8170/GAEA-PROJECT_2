@@ -8,12 +8,10 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 // plane utils
 import { cn, renderFormattedDate } from "@plane/utils";
-//helpers
-//
-//hooks
+// hooks
 import { useTimeLineChartStore } from "@/hooks/use-timeline-chart";
 
-type LeftResizableProps = {
+type Props = {
   enableBlockLeftResize: boolean;
   handleBlockDrag: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, dragDirection: "left" | "right" | "move") => void;
   isMoving: "left" | "right" | "move" | undefined;
@@ -22,7 +20,8 @@ type LeftResizableProps = {
     width: number;
   };
 };
-export const LeftResizable = observer(function LeftResizable(props: LeftResizableProps) {
+
+export const LeftResizable = observer(function LeftResizable(props: Props) {
   const { enableBlockLeftResize, isMoving, handleBlockDrag, position } = props;
   const [isHovering, setIsHovering] = useState(false);
 
@@ -31,7 +30,7 @@ export const LeftResizable = observer(function LeftResizable(props: LeftResizabl
   const date = position ? getDateFromPositionOnGantt(position.marginLeft, 0) : undefined;
   const dateString = date ? renderFormattedDate(date) : undefined;
 
-  const isLeftResizing = isMoving === "left" || isMoving === "move";
+  const isLeftResizing = isMoving === "left";
 
   if (!enableBlockLeftResize) return null;
 
@@ -58,10 +57,13 @@ export const LeftResizable = observer(function LeftResizable(props: LeftResizabl
         className={cn(
           "absolute left-1 top-1/2 -translate-y-1/2 h-7 w-1 z-[5] rounded-xs bg-surface-1 transition-all duration-300 opacity-0 group-hover:opacity-100",
           {
-            "-left-1.5 opacity-100": isLeftResizing,
+            "opacity-100": isLeftResizing,
+            "-left-1.5": isLeftResizing,
           }
         )}
-      />
+      >
+        <div className="h-full w-full rounded-xs bg-custom-primary-100" />
+      </div>
     </>
   );
 });

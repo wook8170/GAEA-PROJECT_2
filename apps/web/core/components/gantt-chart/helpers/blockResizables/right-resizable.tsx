@@ -8,12 +8,10 @@ import { useState } from "react";
 import { observer } from "mobx-react";
 // plane utils
 import { cn, renderFormattedDate } from "@plane/utils";
-//helpers
-//
-//hooks
+// hooks
 import { useTimeLineChartStore } from "@/hooks/use-timeline-chart";
 
-type RightResizableProps = {
+type Props = {
   enableBlockRightResize: boolean;
   handleBlockDrag: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, dragDirection: "left" | "right" | "move") => void;
   isMoving: "left" | "right" | "move" | undefined;
@@ -22,23 +20,24 @@ type RightResizableProps = {
     width: number;
   };
 };
-export const RightResizable = observer(function RightResizable(props: RightResizableProps) {
-  const { enableBlockRightResize, handleBlockDrag, isMoving, position } = props;
+
+export const RightResizable = observer(function RightResizable(props: Props) {
+  const { enableBlockRightResize, isMoving, handleBlockDrag, position } = props;
   const [isHovering, setIsHovering] = useState(false);
 
   const { getDateFromPositionOnGantt } = useTimeLineChartStore();
 
-  const date = position ? getDateFromPositionOnGantt(position.marginLeft + position.width, -1) : undefined;
+  const date = position ? getDateFromPositionOnGantt(position.marginLeft + position.width, 0) : undefined;
   const dateString = date ? renderFormattedDate(date) : undefined;
 
-  const isRightResizing = isMoving === "right" || isMoving === "move";
+  const isRightResizing = isMoving === "right";
 
   if (!enableBlockRightResize) return null;
 
   return (
     <>
       {(isHovering || isRightResizing) && dateString && (
-        <div className="z-[10] absolute flex text-11 font-regular text-tertiary h-full w-32 -right-36 justify-start items-center">
+        <div className="absolute flex text-11 font-regular text-tertiary h-full w-32 -right-36 justify-start items-center">
           <div className="px-2 py-1 bg-accent-subtle rounded-sm">{dateString}</div>
         </div>
       )}
@@ -56,10 +55,13 @@ export const RightResizable = observer(function RightResizable(props: RightResiz
         className={cn(
           "absolute right-1 top-1/2 -translate-y-1/2 h-7 w-1 z-[5] rounded-xs bg-surface-1 transition-all duration-300 opacity-0 group-hover:opacity-100",
           {
-            "-right-1.5 opacity-100": isRightResizing,
+            "opacity-100": isRightResizing,
+            "-right-1.5": isRightResizing,
           }
         )}
-      />
+      >
+        <div className="h-full w-full rounded-xs bg-custom-primary-100" />
+      </div>
     </>
   );
 });

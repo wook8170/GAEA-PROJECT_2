@@ -136,12 +136,12 @@ export const BaseGanttRoot = observer(function BaseGanttRoot(props: IBaseGanttRo
             blockUpdateHandler={updateIssueBlockStructure}
             blockToRender={(data: TIssue) => <IssueGanttBlock issueId={data.id} isEpic={isEpic} />}
             sidebarToRender={(props) => <IssueGanttSidebar {...props} showAllBlocks isEpic={isEpic} />}
-            enableBlockLeftResize={isAllowed}
-            enableBlockRightResize={isAllowed}
-            enableBlockMove={isAllowed}
-            enableReorder={appliedDisplayFilters?.order_by === "sort_order" && isAllowed}
-            enableAddBlock={isAllowed}
-            enableSelection={isBulkOperationsEnabled && isAllowed}
+            enableBlockLeftResize={true}
+            enableBlockRightResize={true}
+            enableBlockMove={true}
+            enableReorder={appliedDisplayFilters?.order_by === "sort_order"}
+            enableAddBlock={true}
+            enableSelection={isBulkOperationsEnabled}
             quickAdd={quickAdd}
             loadMoreBlocks={loadMoreIssues}
             canLoadMoreBlocks={nextPageResults}

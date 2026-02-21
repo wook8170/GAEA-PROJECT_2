@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2023-present Plane Software, Inc. and contributors
- * SPDX-License-Identifier: AGPL-3.0-only
- * See the LICENSE file for details.
- */
-
 import { isEqual, set } from "lodash-es";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
@@ -13,9 +7,7 @@ import type {
   IBlockUpdateDependencyData,
   IGanttBlock,
   TGanttViews,
-  EGanttBlockType,
 } from "@plane/types";
-import { renderFormattedPayloadDate } from "@plane/utils";
 import { currentViewDataWithView } from "@/components/gantt-chart/data";
 import {
   getDateFromPositionOnGantt,
@@ -23,6 +15,7 @@ import {
   getPositionFromDate,
 } from "@/components/gantt-chart/views/helpers";
 // helpers
+import { renderFormattedPayloadDate } from "@plane/utils";
 // store
 import type { RootStore } from "@/plane-web/store/root.store";
 
@@ -109,67 +102,36 @@ export class BaseTimeLineStore implements IBaseTimelineStore {
     this.rootStore = _rootStore;
   }
 
-  /**
-   * Update Block Ids to derive blocks from
-   * @param ids
-   */
   setBlockIds = (ids: string[]) => {
     this.blockIds = ids;
   };
 
-  /**
-   * setIsDragging
-   * @param isDragging
-   */
   setIsDragging = (isDragging: boolean) => {
     runInAction(() => {
       this.isDragging = isDragging;
     });
   };
 
-  /**
-   * @description check if block is active
-   * @param {string} blockId
-   */
   isBlockActive = computedFn((blockId: string): boolean => this.activeBlockId === blockId);
 
-  /**
-   * @description update current view
-   * @param {TGanttViews} view
-   */
   updateCurrentView = (view: TGanttViews) => {
     this.currentView = view;
   };
 
-  /**
-   * @description update current view data
-   * @param {ChartDataType | undefined} data
-   */
   updateCurrentViewData = (data: ChartDataType | undefined) => {
     runInAction(() => {
       this.currentViewData = data;
     });
   };
 
-  /**
-   * @description update active block
-   * @param {string | null} block
-   */
   updateActiveBlockId = (blockId: string | null) => {
     this.activeBlockId = blockId;
   };
 
-  /**
-   * @description update render view
-   * @param {any[]} data
-   */
   updateRenderView = (data: any[]) => {
     this.renderView = data;
   };
 
-  /**
-   * @description initialize gantt chart with month view
-   */
   initGantt = () => {
     const newCurrentViewData = currentViewDataWithView(this.currentView);
 
@@ -180,21 +142,14 @@ export class BaseTimeLineStore implements IBaseTimelineStore {
     });
   };
 
-  /** Gets Block from Id */
   getBlockById = computedFn((blockId: string) => this.blocksMap[blockId]);
 
-  /**
-   * updates the BlocksMap from blockIds
-   * @param getDataById
-   * @returns
-   */
-  updateBlocks(getDataById: (id: string) => BlockData | undefined | null, type?: EGanttBlockType, index?: number) {
+  updateBlocks(getDataById: (id: string) => BlockData | undefined | null) {
     if (!this.blockIds || !Array.isArray(this.blockIds) || this.isDragging) return true;
 
     const updatedBlockMaps: { path: string[]; value: any }[] = [];
     const newBlocks: IGanttBlock[] = [];
 
-    // Loop through blockIds to generate blocks Data
     for (const blockId of this.blockIds) {
       const blockData = getDataById(blockId);
       if (!blockData) continue;
@@ -207,8 +162,6 @@ export class BaseTimeLineStore implements IBaseTimelineStore {
         start_date: blockData?.start_date ?? undefined,
         target_date: blockData?.target_date ?? undefined,
         meta: {
-          type,
-          index,
           project_id: blockData?.project_id,
         },
       };
@@ -216,7 +169,6 @@ export class BaseTimeLineStore implements IBaseTimelineStore {
         block.position = getItemPositionWidth(this.currentViewData, block);
       }
 
-      // create block updates if the block already exists, or push them to newBlocks
       if (this.blocksMap[blockId]) {
         for (const key of Object.keys(block)) {
           const currValue = this.blocksMap[blockId][key as keyof IGanttBlock];
@@ -230,7 +182,6 @@ export class BaseTimeLineStore implements IBaseTimelineStore {
       }
     }
 
-    // update the store with the block updates
     runInAction(() => {
       for (const updatedBlock of updatedBlockMaps) {
         set(this.blocksMap, updatedBlock.path, updatedBlock.value);
@@ -242,94 +193,54 @@ export class BaseTimeLineStore implements IBaseTimelineStore {
     });
   }
 
-  /**
-   * returns number of days that the position pixels span across the timeline chart
-   * @param position
-   * @returns
-   */
   getNumberOfDaysFromPosition = (position: number | undefined) => {
     if (!this.currentViewData || !position) return;
-
     return Math.round(position / this.currentViewData.data.dayWidth);
   };
 
-  /**
-   * returns position of the date on chart
-   */
   getPositionFromDateOnGantt = computedFn((date: string | Date, offSetWidth: number) => {
     if (!this.currentViewData) return;
-
     return getPositionFromDate(this.currentViewData, date, offSetWidth);
   });
 
-  /**
-   * returns the date at which the position corresponds to on the timeline chart
-   */
   getDateFromPositionOnGantt = computedFn((position: number, offsetDays: number) => {
     if (!this.currentViewData) return;
-
     return getDateFromPositionOnGantt(position, this.currentViewData, offsetDays);
   });
 
-  /**
-   * Adds width on Chart position change while the blocks are being dragged
-   * @param addedWidth
-   */
   updateAllBlocksOnChartChangeWhileDragging = action((addedWidth: number) => {
     if (!this.blockIds || !this.isDragging) return;
 
     runInAction(() => {
       this.blockIds?.forEach((blockId) => {
         const currBlock = this.blocksMap[blockId];
-
         if (!currBlock || !currBlock.position) return;
-
         currBlock.position.marginLeft += addedWidth;
       });
     });
   });
 
-  /**
-   * returns updates dates of blocks post drag.
-   * @param id
-   * @param shouldUpdateHalfBlock if is a half block then update the incomplete block only if this is true
-   * @returns
-   */
   getUpdatedPositionAfterDrag = action((id: string, shouldUpdateHalfBlock: boolean) => {
     const currBlock = this.blocksMap[id];
-
     if (!currBlock?.position || !this.currentViewData) return [];
-
     const updatePayload: IBlockUpdateDependencyData = { id, meta: currBlock.meta };
 
-    // If shouldUpdateHalfBlock or the start date is available then update start date
     if (shouldUpdateHalfBlock || currBlock.start_date) {
       updatePayload.start_date = renderFormattedPayloadDate(
         getDateFromPositionOnGantt(currBlock.position.marginLeft, this.currentViewData)
       );
     }
-    // If shouldUpdateHalfBlock or the target date is available then update target date
     if (shouldUpdateHalfBlock || currBlock.target_date) {
       updatePayload.target_date = renderFormattedPayloadDate(
         getDateFromPositionOnGantt(currBlock.position.marginLeft + currBlock.position.width, this.currentViewData, -1)
       );
     }
-
     return [updatePayload];
   });
 
-  /**
-   * updates the block's position such as marginLeft and width while dragging
-   * @param id
-   * @param deltaLeft
-   * @param deltaWidth
-   * @returns
-   */
   updateBlockPosition = action((id: string, deltaLeft: number, deltaWidth: number) => {
     const currBlock = this.blocksMap[id];
-
     if (!currBlock?.position) return;
-
     const newMarginLeft = currBlock.position.marginLeft + deltaLeft;
     const newWidth = currBlock.position.width + deltaWidth;
 
@@ -341,6 +252,6 @@ export class BaseTimeLineStore implements IBaseTimelineStore {
     });
   });
 
-  // Dummy method to return if the current Block's dependency is being dragged
   getIsCurrentDependencyDragging = computedFn((blockId: string) => false);
 }
+
