@@ -13,3 +13,4 @@ export const useTimeLineType = () => {
   const timelineType = useContext(TimeLineTypeContext);
   return timelineType;
 };
+

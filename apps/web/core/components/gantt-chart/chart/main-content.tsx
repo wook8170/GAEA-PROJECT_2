@@ -246,3 +246,4 @@ export const GanttChartMainContent = observer(function GanttChartMainContent(pro
     </>
   );
 });
+

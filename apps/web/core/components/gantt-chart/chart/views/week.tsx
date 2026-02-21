@@ -74,17 +74,19 @@ export const WeekChartView = observer(function WeekChartView(_props: any) {
               </div>
             </div>
             {/** Day Columns */}
-            <div className="h-full w-full flex-grow flex bg-surface-1">
+            <div className="h-full w-full flex-grow flex bg-transparent">
               {block?.children?.map((weekDay, index) => (
                 <div
                   key={`column-${rootIndex}-${index}`}
-                  className={cn("h-full overflow-hidden outline-[0.25px] outline-subtle", {
+                  className={cn("h-full overflow-hidden shrink-0 box-border", {
+                    "border-r border-dashed border-subtle": !["sat", "sun"].includes(weekDay?.dayData?.shortTitle),
+                    "border-r border-subtle": ["sat", "sun"].includes(weekDay?.dayData?.shortTitle),
                     "bg-accent-primary/20": weekDay.today,
                   })}
                   style={{ width: `${currentViewData?.data.dayWidth}px` }}
                 >
                   {["sat", "sun"].includes(weekDay?.dayData?.shortTitle) && (
-                    <div className="h-full bg-surface-2 outline-[0.25px] outline-strong" />
+                    <div className="h-full bg-surface-2" />
                   )}
                 </div>
               ))}

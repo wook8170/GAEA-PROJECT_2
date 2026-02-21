@@ -7,10 +7,11 @@
 import { observer } from "mobx-react";
 // components
 import { cn } from "@plane/utils";
-import { HEADER_HEIGHT, SIDEBAR_WIDTH } from "@/components/gantt-chart/constants";
-// helpers
+// hooks
 // hooks
 import { useTimeLineChartStore } from "@/hooks/use-timeline-chart";
+// constants
+import { HEADER_HEIGHT, SIDEBAR_WIDTH } from "../../constants";
 // types
 import type { IMonthView } from "../../views";
 import { getNumberOfDaysBetweenTwoDates } from "../../views/helpers";
