@@ -224,7 +224,7 @@ export const PageRoot = observer(function PageRoot(props: TPageRootProps) {
     }
   );
 
-  if (!realtimeConfig) {
+  if (!realtimeConfig || !currentUser?.id) {
     return (
       <div className="size-full flex flex-col">
         <PageEditorToolbarRoot

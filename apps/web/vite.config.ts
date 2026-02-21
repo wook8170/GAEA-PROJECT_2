@@ -21,7 +21,12 @@ export default defineConfig(() => ({
   build: {
     assetsInlineLimit: 0,
   },
-  plugins: [reactRouter(), tsconfigPaths({ projects: [path.resolve(__dirname, "tsconfig.json")] })],
+  plugins: [
+    reactRouter(),
+    tsconfigPaths({
+      projects: [path.resolve(__dirname, "tsconfig.json"), path.resolve(__dirname, "../../packages/editor/tsconfig.json")],
+    }),
+  ],
   resolve: {
     alias: {
       // Next.js compatibility shims used within web

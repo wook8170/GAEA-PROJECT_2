@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { observer } from "mobx-react";
 // plane imports
-import { LIVE_BASE_PATH, LIVE_BASE_URL } from "@plane/constants";
+import { API_BASE_URL, LIVE_BASE_PATH, LIVE_BASE_URL } from "@plane/constants";
 import {
   CollaborativeDocumentEditorWithRef,
   CollaborationProvider,
@@ -21,7 +21,8 @@ import type {
   TFileHandler,
   TRealtimeConfig,
   TServerHandler,
-} from "@plane/editor";
+}
+  from "@plane/editor";
 import { useTranslation } from "@plane/i18n";
 import type { TSearchEntityRequestPayload, TSearchResponse, TWebhookConnectionQueryParams } from "@plane/types";
 import { ERowVariant, Row } from "@plane/ui";
@@ -222,8 +223,9 @@ export const PageEditorBody = observer(function PageEditorBody(props: Props) {
       id: currentUser?.id ?? "",
       name: currentUser?.display_name ?? "",
       color: hslToHex(generateRandomColor(currentUser?.id ?? "")),
+      avatar: (currentUser?.avatar_url && currentUser.avatar_url.startsWith("/")) ? `${API_BASE_URL}${currentUser.avatar_url}` : currentUser?.avatar_url || "",
     }),
-    [currentUser?.display_name, currentUser?.id]
+    [currentUser?.display_name, currentUser?.id, currentUser?.avatar_url]
   );
 
   const blockWidthClassName = cn(

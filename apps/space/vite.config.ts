@@ -3,7 +3,22 @@ import * as dotenv from "@dotenvx/dotenvx";
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { joinUrlPath } from "@plane/utils";
+const joinUrlPath = (...segments: string[]): string => {
+  if (segments.length === 0) return "";
+  const validSegments = segments.filter((segment) => segment !== "");
+  if (validSegments.length === 0) return "";
+  const processedSegments = validSegments.map((segment, index) => {
+    let processed = segment;
+    while (processed.startsWith("/")) processed = processed.substring(1);
+    if (index < validSegments.length - 1) {
+      while (processed.endsWith("/")) processed = processed.substring(0, processed.length - 1);
+    }
+    return processed;
+  });
+  const joined = processedSegments.join("/");
+  return `/${joined.split("/").filter((part) => part !== "").join("/")}`;
+};
+
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 

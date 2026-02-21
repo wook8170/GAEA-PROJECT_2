@@ -56,7 +56,16 @@ export class Server {
 
   private setupMiddleware() {
     // Security middleware
-    this.app.use(helmet());
+    this.app.use(
+      helmet({
+        contentSecurityPolicy: {
+          directives: {
+            "default-src": ["'self'"],
+            "connect-src": ["'self'", "ws:", "wss:", "http:", "https:"],
+          },
+        },
+      })
+    );
     // Middleware for response compression
     this.app.use(compression({ level: env.COMPRESSION_LEVEL, threshold: env.COMPRESSION_THRESHOLD }));
     // Logging middleware
@@ -94,8 +103,8 @@ export class Server {
 
   public listen() {
     this.httpServer = this.app
-      .listen(this.app.get("port"), () => {
-        logger.info(`SERVER: Express server has started at port ${this.app.get("port")}`);
+      .listen(this.app.get("port"), "0.0.0.0", () => {
+        logger.info(`SERVER: Express server has started at port ${this.app.get("port")} on 0.0.0.0`);
       })
       .on("error", (err) => {
         logger.error("SERVER: Failed to start server:", err);

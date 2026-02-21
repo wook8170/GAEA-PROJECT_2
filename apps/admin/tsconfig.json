@@ -5,13 +5,59 @@
     "exactOptionalPropertyTypes": false,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
-    "rootDirs": [".", "./.react-router/types"],
-    "types": ["vite/client"],
+    "rootDirs": [
+      ".",
+      "./.react-router/types"
+    ],
+    "types": [
+      "vite/client"
+    ],
     "paths": {
-      "package.json": ["./package.json"],
-      "@/*": ["./*"]
+      "package.json": [
+        "./package.json"
+      ],
+      "@/*": [
+        "./*"
+      ],
+      "@plane/constants": [
+        "../../packages/constants/src"
+      ],
+      "@plane/utils": [
+        "../../packages/utils/src"
+      ],
+      "@plane/types": [
+        "../../packages/types/src"
+      ],
+      "@plane/hooks": [
+        "../../packages/hooks/src"
+      ],
+      "@plane/services": [
+        "../../packages/services/src"
+      ],
+      "@plane/propel/*": [
+        "../../packages/propel/src/*"
+      ],
+      "@plane/ui": [
+        "../../packages/ui/src"
+      ],
+      "@plane/editor": [
+        "../../packages/editor/src"
+      ],
+      "@plane/i18n": [
+        "../../packages/i18n/src"
+      ],
+      "@plane/shared-state": [
+        "../../packages/shared-state/src"
+      ]
     }
   },
-  "include": ["**/*", "**/.server/**/*", "**/.client/**/*", ".react-router/types/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "**/*",
+    "**/.server/**/*",
+    "**/.client/**/*",
+    ".react-router/types/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

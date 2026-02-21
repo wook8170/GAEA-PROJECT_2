@@ -1,13 +1,58 @@
 {
   "compilerOptions": {
-    "rootDirs": [".", "./.react-router/types"],
+    "rootDirs": [
+      ".",
+      "./.react-router/types"
+    ],
     "paths": {
-      "@/*": ["./core/*"],
-      "@/app/*": ["./app/*"],
-      "@/helpers/*": ["./helpers/*"],
-      "@/styles/*": ["./styles/*"],
-      "@/plane-web/*": ["./ce/*"],
-      "package.json": ["./package.json"]
+      "@/*": [
+        "./core/*"
+      ],
+      "@/app/*": [
+        "./app/*"
+      ],
+      "@/helpers/*": [
+        "./helpers/*"
+      ],
+      "@/styles/*": [
+        "./styles/*"
+      ],
+      "@/plane-web/*": [
+        "./ce/*"
+      ],
+      "@plane/constants": [
+        "../../packages/constants/src"
+      ],
+      "@plane/utils": [
+        "../../packages/utils/src"
+      ],
+      "@plane/types": [
+        "../../packages/types/src"
+      ],
+      "@plane/hooks": [
+        "../../packages/hooks/src"
+      ],
+      "@plane/services": [
+        "../../packages/services/src"
+      ],
+      "@plane/propel/*": [
+        "../../packages/propel/src/*"
+      ],
+      "@plane/ui": [
+        "../../packages/ui/src"
+      ],
+      "@plane/editor": [
+        "../../packages/editor/src"
+      ],
+      "@plane/i18n": [
+        "../../packages/i18n/src"
+      ],
+      "@plane/shared-state": [
+        "../../packages/shared-state/src"
+      ],
+      "package.json": [
+        "./package.json"
+      ]
     },
     "strictNullChecks": true,
     "exactOptionalPropertyTypes": false,
@@ -15,8 +60,15 @@
     "noUnusedLocals": false,
     "noImplicitReturns": false,
     "noImplicitOverride": false,
-    "types": ["vite/client"]
+    "types": [
+      "vite/client"
+    ]
   },
   "extends": "@plane/typescript-config/react-router.json",
-  "include": ["**/*", "**/.server/**/*", "**/.client/**/*", ".react-router/types/**/*"]
+  "include": [
+    "**/*",
+    "**/.server/**/*",
+    "**/.client/**/*",
+    ".react-router/types/**/*"
+  ]
 }

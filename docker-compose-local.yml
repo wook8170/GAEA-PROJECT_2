@@ -38,7 +38,7 @@ services:
       MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
       MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
     ports:
-      - "9000:9000"
+      - "9010:9000"
       - "9090:9090"
 
   plane-db:
@@ -106,11 +106,13 @@ services:
     restart: unless-stopped
     networks:
       - dev_env
-    # volumes:
+    volumes:
+      - .:/app
+      - /app/node_modules
     env_file:
       - ./apps/live/.env
     ports:
-      - "3003:3100"
+      - "9002:9002"
     depends_on:
       - api
       - worker
@@ -134,7 +136,7 @@ services:
       - plane-redis
       - plane-mq
     ports:
-      - "8000:8000"
+      - "9001:8000"
     extra_hosts:
       - "localhost:host-gateway"
 

@@ -14,7 +14,7 @@ export class RedisManager {
   private isConnected: boolean = false;
   private connectionPromise: Promise<void> | null = null;
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): RedisManager {
     if (!RedisManager.instance) {
@@ -71,7 +71,8 @@ export class RedisManager {
         lazyConnect: false, // Connect immediately for reliability (duplicates inherit this)
         keepAlive: 30000,
         connectTimeout: 10000,
-        maxRetriesPerRequest: 3,
+        maxRetriesPerRequest: null,
+
         enableOfflineQueue: true, // Keep commands queued during reconnection
         retryStrategy: (times: number) => {
           // Exponential backoff with max 2 seconds

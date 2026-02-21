@@ -39,12 +39,17 @@ const extensionRegistry: TDocumentEditorAdditionalExtensionsRegistry[] = [
 
           const label = document.createElement("div");
           label.classList.add("collaboration-cursor__label");
-          label.setAttribute("style", `background-color: ${user.color}; position: absolute; top: -1.4em; left: -1px; font-size: 12px; font-weight: 600; padding: 1px 4px; border-radius: 3px 3px 3px 0; white-space: nowrap; display: flex; align-items: center; gap: 4px; color: white; pointer-events: none; z-index: 10;`);
+          label.setAttribute("style", `background-color: ${user.color}; position: absolute; top: -1.8em; left: -1px; font-size: 13px; font-weight: 600; padding: 2px 8px; border-radius: 4px 4px 4px 0; white-space: nowrap; display: flex; align-items: center; gap: 6px; color: white; pointer-events: none; z-index: 10; line-height: 1.4;`);
 
-          if (user.avatar) {
+          if (user.avatar && user.avatar.trim() !== "") {
             const avatar = document.createElement("img");
-            avatar.setAttribute("src", user.avatar);
-            avatar.setAttribute("style", "width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2);");
+            const finalAvatarUrl = user.avatar.startsWith("/") ? `http://localhost:9001${user.avatar}` : user.avatar;
+            avatar.setAttribute("src", finalAvatarUrl);
+            avatar.setAttribute("style", "width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.4); flex-shrink: 0;");
+            // 이미지가 깨질 경우 표시하지 않도록 예외 처리
+            avatar.onerror = () => {
+              avatar.style.display = "none";
+            };
             label.appendChild(avatar);
           }
 

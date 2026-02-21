@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 // plane editor
 import { useCollaboration, type TUserDetails } from "@plane/editor";
+// constants
+import { API_BASE_URL } from "@plane/constants";
 // plane ui
 import { Avatar, AvatarGroup } from "@plane/ui";
 // store
@@ -48,7 +50,13 @@ export function PageCollaboratorsList({ }: TPageCollaboratorsListProps) {
           <Avatar
             key={user.id}
             name={user.name}
-            src={user.avatar}
+            src={
+              user.avatar && user.avatar.trim() !== ""
+                ? user.avatar.startsWith("/")
+                  ? `${API_BASE_URL}${user.avatar}`
+                  : user.avatar
+                : undefined
+            }
             fallbackBackgroundColor={user.color}
           />
         ))}
