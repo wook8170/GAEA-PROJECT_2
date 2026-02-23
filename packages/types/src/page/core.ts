@@ -7,6 +7,10 @@
 import type { TLogoProps } from "../common";
 import type { EPageAccess } from "../enums";
 import type { TPageExtended } from "./extended";
+import type { TPageLock } from "./lock";
+import type { TPagePermission } from "./permission";
+import type { TPageVersion } from "./version";
+import type { TEditorAsset } from "@plane/editor";
 
 export type TPage = {
   access: EPageAccess | undefined;
@@ -17,18 +21,21 @@ export type TPage = {
   description_json: object | undefined;
   description_html: string | undefined;
   id: string | undefined;
-  is_favorite: boolean;
-  is_locked: boolean;
-  label_ids: string[] | undefined;
+  is_bookmarked: boolean | undefined;
+  is_favorite: boolean | undefined;
+  is_page_favorited: boolean | undefined;
+  is_template: boolean | undefined;
+  logo_props: TLogoProps | undefined;
   name: string | undefined;
-  owned_by: string | undefined;
-  project_ids?: string[] | undefined;
+  parent: string | undefined;
+  project: string | undefined;
   updated_at: Date | undefined;
   updated_by: string | undefined;
   workspace: string | undefined;
-  logo_props: TLogoProps | undefined;
-  deleted_at: Date | undefined;
+  owned_by: string | undefined;
 } & TPageExtended;
+
+export type TPageEmbedType = "mention" | "issue";
 
 // page filters
 export type TPageNavigationTabs = "public" | "private" | "archived";
@@ -51,8 +58,6 @@ export type TPageFilters = {
   filters?: TPageFilterProps;
 };
 
-export type TPageEmbedType = "mention" | "issue";
-
 export type TPageVersion = {
   created_at: string;
   created_by: string;
@@ -67,6 +72,7 @@ export type TPageVersion = {
   updated_at: string;
   updated_by: string;
   workspace: string;
+  assets_list?: TEditorAsset[]; // 에셋 목록 추가
 };
 
 export type TDocumentPayload = {

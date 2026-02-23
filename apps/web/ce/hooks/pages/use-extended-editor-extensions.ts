@@ -17,10 +17,17 @@ export type TExtendedEditorExtensionsHookParams = {
   getRedirectionLink: (pageId?: string) => string;
   extensionHandlers?: Map<string, unknown>;
   projectId?: string;
+  showToast?: (type: "error" | "success" | "info" | "warning", title: string, message?: string) => void;
 };
 
 export type TExtendedEditorExtensionsConfig = IEditorPropsExtended;
 
 export const useExtendedEditorProps = (
-  _params: TExtendedEditorExtensionsHookParams
-): TExtendedEditorExtensionsConfig => ({});
+  params: TExtendedEditorExtensionsHookParams
+): TExtendedEditorExtensionsConfig => {
+  const { showToast } = params;
+  return {
+    // Pass showToast to editor extensions
+    showToast,
+  };
+};

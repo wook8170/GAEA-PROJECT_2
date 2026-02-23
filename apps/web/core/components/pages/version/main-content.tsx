@@ -56,7 +56,10 @@ export const PageVersionsMainContent = observer(function PageVersionsMainContent
   const handleRestoreVersion = async () => {
     if (!restoreEnabled) return;
     setIsRestoring(true);
-    await handleRestore(versionDetails?.description_html ?? "<p></p>")
+    await handleRestore(
+      versionDetails?.description_html ?? "<p></p>",
+      versionDetails?.assets_list
+    )
       .then(() => {
         setToast({
           type: TOAST_TYPE.SUCCESS,

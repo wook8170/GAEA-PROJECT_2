@@ -9,6 +9,7 @@ import { observer } from "mobx-react";
 import { useRouter, useSearchParams } from "next/navigation";
 // plane imports
 import type { TPageVersion } from "@plane/types";
+import type { TEditorAsset } from "@plane/editor";
 import { cn } from "@plane/utils";
 // hooks
 import { useQueryParams } from "@/hooks/use-query-params";
@@ -22,7 +23,7 @@ import { PageVersionsMainContent } from "./main-content";
 type Props = {
   editorComponent: React.FC<TVersionEditorProps>;
   fetchVersionDetails: (pageId: string, versionId: string) => Promise<TPageVersion | undefined>;
-  handleRestore: (descriptionHTML: string) => Promise<void>;
+  handleRestore: (descriptionHTML: string, assetsList?: TEditorAsset[]) => Promise<void>;
   pageId: string;
   restoreEnabled: boolean;
   storeType: EPageStoreType;

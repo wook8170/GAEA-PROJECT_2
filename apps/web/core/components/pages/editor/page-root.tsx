@@ -8,12 +8,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { observer } from "mobx-react";
 // plane imports
 import { LIVE_BASE_PATH, LIVE_BASE_URL } from "@plane/constants";
-import {
-  CollaborationProvider,
-  type CollaborationState,
-  type EditorRefApi,
-  type TServerHandler,
-} from "@plane/editor";
+import { CollaborationProvider } from "@plane/editor";
+import type { EditorRefApi } from "@plane/editor";
+import type { TEditorAsset } from "@plane/editor";
+import type { TServerHandler } from "@plane/editor";
 import type { TDocumentPayload, TPage, TPageVersion, TWebhookConnectionQueryParams } from "@plane/types";
 import { cn, generateRandomColor, hslToHex } from "@plane/utils";
 // hooks
@@ -47,7 +45,9 @@ export type TPageRootHandlers = {
 } & TEditorBodyHandlers &
   TServerHandler;
 
-export type TPageRootConfig = TEditorBodyConfig;
+export type TPageRootConfig = TEditorBodyConfig & {
+  showToast?: (type: "error" | "success" | "info" | "warning", title: string, message?: string) => void;
+};
 
 type TPageRootProps = {
   config: TPageRootConfig;
@@ -158,12 +158,18 @@ export const PageRoot = observer(function PageRoot(props: TPageRootProps) {
     getRedirectionLink: handlers.getRedirectionLink,
     extensionHandlers: editorExtensionHandlers,
     projectId,
+    showToast: config.showToast,
   });
 
   const handleRestoreVersion = useCallback(
-    async (descriptionHTML: string) => {
+    async (descriptionHTML: string, assetsList?: TEditorAsset[]) => {
       editorRef.current?.clearEditor();
       editorRef.current?.setEditorValue(descriptionHTML);
+      
+      // Restore assets list if provided
+      if (assetsList && editorRef.current?.updateAssetsList) {
+        editorRef.current.updateAssetsList(assetsList);
+      }
     },
     [editorRef]
   );

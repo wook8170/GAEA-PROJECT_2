@@ -12,6 +12,7 @@ import useSWR from "swr";
 import { getButtonStyling } from "@plane/propel/button";
 import type { TSearchEntityRequestPayload, TWebhookConnectionQueryParams } from "@plane/types";
 import { EFileAssetType } from "@plane/types";
+import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 // plane utils
 import { cn } from "@plane/utils";
 // components
@@ -99,7 +100,23 @@ function PageDetailsPage({ params }: Route.ComponentProps) {
       onStateChange: (state) => {
         // handle state change if needed
       },
-      updateDescription: updateDescription ?? (async () => { }),
+      updateDescription: updateDescription ?? (async (document) => {
+        // Get current assets from editor
+        const editorAssets = page?.editor?.assetsList || [];
+        console.log("🔍 Page - updateDescription called with assets:", {
+          assetsCount: editorAssets.length,
+          assetIds: editorAssets.map(a => a.id),
+          timestamp: Date.now()
+        });
+        
+        // Include assets in the document payload
+        const documentWithAssets = {
+          ...document,
+          assets_list: editorAssets
+        };
+        
+        await projectPageService.updateDescription(workspaceSlug, projectId, id, documentWithAssets);
+      }),
     }),
     [createPage, fetchEntityCallback, id, updateDescription, workspaceSlug, projectId]
   );
@@ -134,9 +151,27 @@ function PageDetailsPage({ params }: Route.ComponentProps) {
         workspaceId,
         workspaceSlug,
       }),
+      showToast: (type: "error" | "success" | "info" | "warning", title: string, message?: string) => {
+        setToast({
+          type: type === "error" ? TOAST_TYPE.ERROR : 
+                type === "success" ? TOAST_TYPE.SUCCESS :
+                type === "info" ? TOAST_TYPE.INFO : TOAST_TYPE.WARNING,
+          title,
+          message,
+        });
+      },
     }),
     [getEditorFileHandlers, projectId, workspaceId, workspaceSlug, uploadEditorAsset, id, duplicateEditorAsset]
   );
+
+  // Set global toast function for editor access
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).planeToast = (toastOptions: any) => {
+        setToast(toastOptions);
+      };
+    }
+  }, []);
 
   const webhookConnectionParams: TWebhookConnectionQueryParams = useMemo(
     () => ({
