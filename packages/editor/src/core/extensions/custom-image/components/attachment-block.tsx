@@ -5,7 +5,7 @@
  */
 
 import { Download, FileText, FileImage, FileArchive, FileCode, FileVideo, FileAudio, File, FileSpreadsheet, Presentation, FilePlus } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 // plane imports
 import { cn } from "@plane/utils";
 // types
@@ -22,6 +22,127 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
     mimeType,
     id: fileId 
   } = node.attrs;
+
+  // 에셋 정보 상태
+  const [assetInfo, setAssetInfo] = useState({ fileName: 'Untitled file', fileSize: null });
+
+  // DB에서 실제 파일 정보 가져오기
+  const getAssetInfoFromDB = useCallback(() => {
+    // node.attrs에서 직접 정보 가져오기
+    const { name: nodeName, size: nodeSize, src: nodeSrc } = node.attrs;
+    
+    console.log("🔍 Node attrs info:", { name: nodeName, size: nodeSize, src: nodeSrc });
+    console.log("🔍 All node.attrs:", node.attrs);
+    
+    // 히스토리 버전인지 확인 (fileType이 null인 경우)
+    const isHistoryVersion = node.attrs.fileType === null;
+    console.log("🔍 Is history version:", isHistoryVersion);
+    
+    if (nodeName && nodeSize) {
+      // node.attrs에 직접 정보가 있는 경우
+      console.log("🔍 Found info in node attrs:", { fileName: nodeName, fileSize: nodeSize });
+      setAssetInfo({ fileName: nodeName, fileSize: nodeSize });
+      return;
+    }
+    
+    // 히스토리 버전인 경우 다른 방식으로 처리
+    if (isHistoryVersion) {
+      console.log("🔍 Processing history version");
+      
+      // 히스토리 버전에서는 API를 통해 직접 에셋 정보 가져오기
+      if (nodeSrc) {
+        console.log("🔍 Fetching history asset info for src:", nodeSrc);
+        
+        // 에디터의 API 설정 가져오기
+        const apiConfig = editor?.storage?.utility?.apiConfig || {};
+        const headers = {
+          'Content-Type': 'application/json',
+          ...(apiConfig.authorization && { 'Authorization': apiConfig.authorization })
+        };
+        
+        console.log("🔍 API headers:", headers);
+        
+        fetch(`http://localhost:9001/api/assets/v2/workspaces/gaeasoft/check/${nodeSrc}/`, { headers })
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+          })
+          .then(data => {
+            console.log("🔍 History asset check result:", data);
+            
+            if (data.exists) {
+              // 에셋이 존재하면 DB에서 직접 정보 가져오기
+              console.log("🔍 History asset exists, fetching details...");
+              
+              // 히스토리 버전의 에셋 정보는 다른 방식으로 저장될 수 있음
+              // node.attrs에 있는 정보를 우선 사용
+              if (nodeName) {
+                console.log("🔍 Using node name for history:", nodeName);
+                setAssetInfo({ fileName: nodeName, fileSize: nodeSize });
+              } else {
+                console.log("🔍 Using src as filename for history:", nodeSrc);
+                setAssetInfo({ fileName: nodeSrc, fileSize: null });
+              }
+            } else {
+              console.log("🔍 History asset does not exist");
+              setAssetInfo({ fileName: nodeSrc, fileSize: null });
+            }
+          })
+          .catch(error => {
+            console.error("🔍 Error fetching history asset:", error);
+            // API 호출 실패 시 node.attrs 정보 사용
+            if (nodeName) {
+              console.log("🔍 Using node name as fallback:", nodeName);
+              setAssetInfo({ fileName: nodeName, fileSize: nodeSize });
+            } else {
+              console.log("🔍 Using src as fallback:", nodeSrc);
+              setAssetInfo({ fileName: nodeSrc, fileSize: null });
+            }
+          });
+        
+        return;
+      }
+    }
+    
+    // 일반적인 경우: 에셋 리스트에서 찾기
+    if (fileId && editor && editor.storage && editor.storage.utility && editor.storage.utility.assetsList) {
+      console.log("🔍 Searching for asset with ID:", fileId);
+      
+      const asset = editor.storage.utility.assetsList.find((a: any) => a.id === fileId);
+      if (asset) {
+        console.log("🔍 Found asset in assetsList:", asset);
+        
+        // attributes에서 실제 파일명과 사이즈 추출
+        const fileName = asset.attributes?.name || asset.name || 'Untitled file';
+        const fileSize = asset.size || null;
+        
+        console.log("🔍 Real file info from assetsList:", { fileName, fileSize });
+        setAssetInfo({ fileName, fileSize });
+        return;
+      }
+      
+      console.log("🔍 Asset not found in assetsList, using fallback");
+    }
+  }, [editor, fileId, node.attrs]);
+
+  useEffect(() => {
+    // 에셋 리스트가 로드될 때까지 기다렸다가 정보 가져오기
+    const timer = setTimeout(() => {
+      getAssetInfoFromDB();
+    }, 100); // 100ms 지연으로 에셋 리스트 로드 대기
+    
+    return () => clearTimeout(timer);
+  }, [getAssetInfoFromDB]);
+
+  // 에셋 리스트 변경 시 다시 시도
+  useEffect(() => {
+    if (editor?.storage?.utility?.assetsList?.length > 0) {
+      getAssetInfoFromDB();
+    }
+  }, [editor?.storage?.utility?.assetsList?.length, getAssetInfoFromDB]);
 
   const getFileIcon = useCallback((fileName: string, mimeType?: string) => {
     const extension = fileName?.split('.').pop()?.toLowerCase();
@@ -139,15 +260,23 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
   }, []);
 
   const handleDownload = useCallback(() => {
-    if (fileUrl && fileName) {
+    if (fileId && assetInfo.fileName) {
+      // 프로젝트 첨부파일 다운로드 URL
+      const downloadUrl = `/api/assets/v2/workspaces/gaeasoft/projects/bd06f3a5-90c0-403d-a75d-a6f39c8b51af/download/${fileId}/`;
+      
+      console.log("🔍 Download triggered:", { downloadUrl, fileName: assetInfo.fileName, fileId });
+      
       const link = document.createElement('a');
-      link.href = fileUrl;
-      link.download = fileName;
+      link.href = downloadUrl;
+      link.download = assetInfo.fileName;
+      link.target = '_blank';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    } else {
+      console.warn("🔍 Cannot download: missing fileId or fileName", { fileId, fileName: assetInfo.fileName });
     }
-  }, [fileUrl, fileName]);
+  }, [fileId, assetInfo.fileName]);
 
   const formatFileSize = useCallback((bytes: number | null) => {
     if (!bytes) return 'Unknown size';
@@ -172,16 +301,16 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
       }}
     >
       <div className="flex-shrink-0">
-        {getFileIcon(fileName || '', mimeType || '')}
+        {getFileIcon(assetInfo.fileName || '', mimeType || '')}
       </div>
       
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
           <div className="text-13 font-medium text-primary truncate">
-            {fileName || 'Untitled file'}
+            {assetInfo.fileName}
           </div>
           <div className="text-11 text-secondary shrink-0">
-            {formatFileSize(fileSize)}
+            {formatFileSize(assetInfo.fileSize)}
           </div>
         </div>
       </div>

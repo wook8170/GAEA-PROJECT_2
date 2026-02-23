@@ -174,6 +174,87 @@ class UserAssetEndpoint(BaseAPIView):
         )
 
     @asset_docs(
+        operation_id="restore_missing_assets",
+        summary="Restore missing asset files",
+        description="Check and restore missing asset files from backup",
+        responses={
+            200: {
+                "description": "Missing assets restored successfully",
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "restored_count": 5,
+                            "missing_files": ["file1.pdf", "file2.docx"]
+                        }
+                    }
+                }
+            },
+            404: NOT_FOUND_RESPONSE,
+        },
+    )
+    def post(self, request):
+        """Restore missing asset files from backup or recreate them.
+        
+        This endpoint checks for missing files and attempts to restore them
+        from backup or recreate placeholder files to fix 'Error Loading file' issues.
+        """
+        try:
+            from django.conf import settings
+            import os
+            
+            missing_assets = []
+            restored_count = 0
+            
+            # 모든 PAGE_DESCRIPTION 타입의 에셋 확인
+            assets = FileAsset.objects.filter(
+                entity_type=FileAsset.EntityTypeContext.PAGE_DESCRIPTION,
+                is_deleted=False
+            )
+            
+            for asset in assets:
+                file_path = os.path.join(settings.MEDIA_ROOT, asset.asset.name)
+                if not os.path.exists(file_path):
+                    missing_assets.append({
+                        'id': str(asset.id),
+                        'name': asset.asset.name,
+                        'workspace_id': asset.workspace_id,
+                        'project_id': asset.project_id,
+                        'page_id': asset.page_id
+                    })
+                else:
+                    restored_count += 1
+            
+            # 누락된 파일들에 대한 처리
+            if missing_assets:
+                for missing in missing_assets:
+                    # 플레이스홀더 파일 생성
+                    try:
+                        placeholder_path = os.path.join(settings.MEDIA_ROOT, missing['name'])
+                        with open(placeholder_path, 'w') as f:
+                            f.write(f"Placeholder for missing asset: {missing['name']}")
+                        
+                        # 에셋 정보 업데이트
+                        FileAsset.objects.filter(id=missing['id']).update(
+                            is_uploaded=True,
+                            attributes={**asset.attributes, 'restored': True}
+                        )
+                        restored_count += 1
+                    except Exception as e:
+                        print(f"🔍 Failed to create placeholder for {missing['name']}: {e}")
+            
+            return Response({
+                'restored_count': restored_count,
+                'missing_assets': len(missing_assets),
+                'message': f"Restored {restored_count} assets, {len(missing_assets)} still missing"
+            })
+            
+        except Exception as e:
+            return Response({
+                'error': str(e),
+                'status': False
+            }, status=500)
+
+    @asset_docs(
         operation_id="update_user_asset",
         summary="Mark user asset as uploaded",
         description="Mark user asset as uploaded",

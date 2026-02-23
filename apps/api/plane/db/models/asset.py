@@ -95,6 +95,20 @@ class FileAsset(BaseModel):
             self.EntityTypeContext.PAGE_DESCRIPTION,
             self.EntityTypeContext.DRAFT_ISSUE_DESCRIPTION,
         ]:
-            return f"/api/assets/v2/workspaces/{self.workspace.slug}/projects/{self.project_id}/{self.id}/"
+            # 파일이 실제로 존재하는지 확인
+            import os
+            from django.conf import settings
+            
+            try:
+                file_path = os.path.join(settings.MEDIA_ROOT, self.asset.name)
+                if os.path.exists(file_path):
+                    return f"/api/assets/v2/workspaces/{self.workspace.slug}/projects/{self.project_id}/{self.id}/"
+                else:
+                    # 파일이 없으면 경고 로그 남기고 None 반환
+                    print(f"🔍 Asset file not found: {file_path}")
+                    return None
+            except Exception as e:
+                print(f"🔍 Error checking asset file: {e}")
+                return None
 
         return None

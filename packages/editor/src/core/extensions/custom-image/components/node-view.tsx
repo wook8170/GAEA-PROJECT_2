@@ -25,7 +25,7 @@ export type CustomImageNodeViewProps = Omit<NodeViewProps, "extension" | "update
 
 export function CustomImageNodeView(props: CustomImageNodeViewProps) {
   const { editor, extension, node, updateAttributes } = props;
-  const { src: imgNodeSrc, status, fileType } = node.attrs;
+  const { src: imgNodeSrc, status, fileType, type: nodeType } = node.attrs;
 
   // Helper function to check if file is attachment based on extension
   function isAttachmentFile(src: string): boolean {
@@ -192,9 +192,12 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
 
   const hasDuplicationFailed = hasImageDuplicationFailed(status);
   const hasValidImageSource = imageFromFileSystem || (isUploaded && resolvedSrc);
-  const hasValidAttachmentSource = resolvedDownloadSrc; //只要有下载源就有效
+  const hasValidAttachmentSource = resolvedDownloadSrc;
   const isActuallyAttachment = fileType === "attachment" || (imgNodeSrc && isAttachmentFile(imgNodeSrc));
-  const shouldShowBlock = (isActuallyAttachment ? hasValidAttachmentSource : hasValidImageSource) && !failedToLoadImage && !hasDuplicationFailed;
+  
+  // attachmentComponent 타입인 경우 항상 첨부파일로 처리
+  const shouldTreatAsAttachment = nodeType === "attachmentComponent" || failedToLoadImage || isActuallyAttachment;
+  const shouldShowBlock = (shouldTreatAsAttachment ? hasValidAttachmentSource : hasValidImageSource) && !hasDuplicationFailed;
 
   console.log("🔍 NodeView - State:", {
     fileType,
@@ -205,13 +208,15 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
     hasDuplicationFailed,
     hasValidAttachmentSource,
     isActuallyAttachment,
-    shouldShowBlock
+    shouldTreatAsAttachment,
+    shouldShowBlock,
+    nodeType
   });
 
   return (
     <NodeViewWrapper key={node.attrs[ECustomImageAttributeNames.ID]}>
       <div className="p-0 mx-0 my-2" data-drag-handle ref={imageComponentRef}>
-        {isActuallyAttachment ? (
+        {shouldTreatAsAttachment ? (
           <AttachmentBlock {...props} />
         ) : shouldShowBlock && !hasDuplicationFailed ? (
           <CustomImageBlock
