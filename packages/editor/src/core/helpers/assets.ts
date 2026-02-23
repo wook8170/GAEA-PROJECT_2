@@ -33,13 +33,18 @@ export const CORE_ASSETS_META_DATA_RECORD: Partial<
   },
   [CORE_EXTENSIONS.CUSTOM_IMAGE]: (attrs) => {
     if (!attrs?.src) return;
+    
+    // Determine if this is an attachment based on fileType
+    const isAttachment = attrs?.fileType === "attachment";
+    const assetType = isAttachment ? CORE_EXTENSIONS.ATTACHMENT : CORE_EXTENSIONS.CUSTOM_IMAGE;
+    
     return {
-      href: `#${getImageBlockId(attrs?.id ?? "")}`,
+      href: isAttachment ? `#attachment-${attrs?.id}` : `#${getImageBlockId(attrs?.id ?? "")}`,
       id: attrs?.id,
-      name: `image-${attrs?.id}`,
-      size: 0,
+      name: attrs?.fileName || (isAttachment ? `attachment-${attrs?.id}` : `image-${attrs?.id}`),
+      size: attrs?.fileSize || 0,
       src: attrs?.src,
-      type: CORE_EXTENSIONS.CUSTOM_IMAGE,
+      type: assetType,
     };
   },
   [CORE_EXTENSIONS.ATTACHMENT]: (attrs) => {

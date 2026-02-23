@@ -25,10 +25,11 @@ export const isFileValid = (args: TArgs): boolean => {
     return false;
   }
 
-  if (!acceptedMimeTypes.includes(file.type)) {
-    onError(EFileError.INVALID_FILE_TYPE, "지원하지 않는 파일 형식입니다.");
-    return false;
-  }
+  // Skip MIME type validation - allow all file types
+  // if (!acceptedMimeTypes.includes(file.type)) {
+  //   onError(EFileError.INVALID_FILE_TYPE, "지원하지 않는 파일 형식입니다.");
+  //   return false;
+  // }
 
   if (maxFileSize > 0 && file.size > maxFileSize) {
     const sizeMB = (file.size / 1024 / 1024).toFixed(1);

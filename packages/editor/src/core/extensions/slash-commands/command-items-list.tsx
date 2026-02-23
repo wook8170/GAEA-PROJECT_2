@@ -41,7 +41,6 @@ import {
   insertCallout,
   setText,
   openEmojiPicker,
-  insertAttachment,
 } from "@/helpers/editor-commands";
 // plane editor extensions
 import { coreEditorAdditionalSlashCommandOptions } from "@/plane-editor/extensions";
@@ -292,29 +291,15 @@ export const getSlashCommandFilteredSections =
       const internalAdditionalOptions: TSlashCommandAdditionalOption[] = [];
       if (!disabledExtensions?.includes("image")) {
         internalAdditionalOptions.push({
-          commandKey: "image",
-          key: "image",
-          title: "Image",
-          icon: <ImageIcon className="size-3.5" />,
-          description: "Insert an image",
-          searchTerms: ["img", "photo", "picture", "media", "upload"],
+          commandKey: "attach",
+          key: "attach",
+          title: "Attach file",
+          icon: <Paperclip className="size-3.5" />,
+          description: "Attach a file (image or document)",
+          searchTerms: ["file", "attach", "upload", "document", "pdf", "doc", "zip", "img", "photo"],
           command: ({ editor, range }: CommandProps) => insertImage({ editor, event: "insert", range }),
           section: "general",
           pushAfter: "code",
-        });
-      }
-
-      if (!disabledExtensions?.includes("attachment")) {
-        internalAdditionalOptions.push({
-          commandKey: "attachment",
-          key: "attachment",
-          title: "File",
-          icon: <Paperclip className="size-3.5" />,
-          description: "Attach a file",
-          searchTerms: ["file", "attachment", "pdf", "doc", "zip"],
-          command: ({ editor, range }: CommandProps) => insertAttachment({ editor, event: "insert", range }),
-          section: "general",
-          pushAfter: "image",
         });
       }
 

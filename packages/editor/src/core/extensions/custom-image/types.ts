@@ -16,6 +16,10 @@ export enum ECustomImageAttributeNames {
   SOURCE = "src",
   ALIGNMENT = "alignment",
   STATUS = "status",
+  FILE_TYPE = "fileType",
+  FILE_NAME = "fileName",
+  FILE_SIZE = "fileSize",
+  MIME_TYPE = "mimeType",
 }
 
 export type Pixel = `${number}px`;
@@ -46,6 +50,10 @@ export type TCustomImageAttributes = {
   [ECustomImageAttributeNames.SOURCE]: string | null;
   [ECustomImageAttributeNames.ALIGNMENT]: TCustomImageAlignment;
   [ECustomImageAttributeNames.STATUS]: ECustomImageStatus;
+  [ECustomImageAttributeNames.FILE_TYPE]: "image" | "attachment" | null;
+  [ECustomImageAttributeNames.FILE_NAME]: string | null;
+  [ECustomImageAttributeNames.FILE_SIZE]: number | null;
+  [ECustomImageAttributeNames.MIME_TYPE]: string | null;
 };
 
 export type UploadEntity = ({ event: "insert" } | { event: "drop"; file: File }) & { hasOpenedFileInputOnce?: boolean };

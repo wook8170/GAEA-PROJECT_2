@@ -7,7 +7,7 @@
 import type { Editor } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 // constants
-import { ACCEPTED_ATTACHMENT_MIME_TYPES, ACCEPTED_IMAGE_MIME_TYPES } from "@/constants/config";
+import { ACCEPTED_IMAGE_MIME_TYPES, ACCEPTED_ATTACHMENT_MIME_TYPES } from "@/constants/config";
 // types
 import type { TEditorCommands, TExtensions } from "@/types";
 
@@ -21,7 +21,8 @@ export const DropHandlerPlugin = (props: Props): Plugin => {
   const { disabledExtensions, flaggedExtensions, editor } = props;
 
   return new Plugin({
-    key: new PluginKey("drop-handler-plugin"),
+    key: new PluginKey("dropHandler"),
+    priority: 1000, // High priority to ensure it runs first
     props: {
       handlePaste: (view, event) => {
         if (
@@ -32,9 +33,7 @@ export const DropHandlerPlugin = (props: Props): Plugin => {
         ) {
           event.preventDefault();
           const files = Array.from(event.clipboardData.files);
-          const acceptedFiles = files.filter(
-            (f) => ACCEPTED_IMAGE_MIME_TYPES.includes(f.type) || ACCEPTED_ATTACHMENT_MIME_TYPES.includes(f.type)
-          );
+          const acceptedFiles = files; // Allow all files
 
           if (acceptedFiles.length) {
             const pos = view.state.selection.from;
@@ -61,9 +60,7 @@ export const DropHandlerPlugin = (props: Props): Plugin => {
         ) {
           event.preventDefault();
           const files = Array.from(event.dataTransfer.files);
-          const acceptedFiles = files.filter(
-            (f) => ACCEPTED_IMAGE_MIME_TYPES.includes(f.type) || ACCEPTED_ATTACHMENT_MIME_TYPES.includes(f.type)
-          );
+          const acceptedFiles = files; // Allow all files
 
           if (acceptedFiles.length) {
             const coordinates = view.posAtCoords({
@@ -97,7 +94,7 @@ type InsertFilesSafelyArgs = {
   event: "insert" | "drop";
   files: File[];
   initialPos: number;
-  type?: Extract<TEditorCommands, "attachment" | "image">;
+  type?: Extract<TEditorCommands, "image" | "attach">;
 };
 
 export const insertFilesSafely = async (args: InsertFilesSafelyArgs) => {
@@ -109,15 +106,15 @@ export const insertFilesSafely = async (args: InsertFilesSafelyArgs) => {
     const docSize = editor.state.doc.content.size;
     pos = Math.min(pos, docSize);
 
-    let fileType: "image" | "attachment" | null = null;
+    let fileType: "image" | "attach" | null = null;
 
     try {
       if (type) {
-        if (["image", "attachment"].includes(type)) fileType = type;
+        if (["image", "attach"].includes(type)) fileType = type;
         else throw new Error("Wrong file type passed");
       } else {
         if (ACCEPTED_IMAGE_MIME_TYPES.includes(file.type)) fileType = "image";
-        else if (ACCEPTED_ATTACHMENT_MIME_TYPES.includes(file.type)) fileType = "attachment";
+        else fileType = "attach"; // Default to attach for all other files
       }
       // insert file depending on the type at the current position
       if (fileType === "image" && !disabledExtensions?.includes("image")) {
@@ -126,8 +123,8 @@ export const insertFilesSafely = async (args: InsertFilesSafelyArgs) => {
           pos,
           event,
         });
-      } else if (fileType === "attachment") {
-        editor.commands.insertAttachmentComponent({
+      } else if (fileType === "attach" && !disabledExtensions?.includes("image")) {
+        editor.commands.insertImageComponent({
           file,
           pos,
           event,

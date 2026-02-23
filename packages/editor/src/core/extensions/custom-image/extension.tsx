@@ -7,7 +7,7 @@
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { v4 as uuidv4 } from "uuid";
 // constants
-import { ACCEPTED_IMAGE_MIME_TYPES } from "@/constants/config";
+import { ACCEPTED_IMAGE_MIME_TYPES, ACCEPTED_ATTACHMENT_MIME_TYPES } from "@/constants/config";
 // helpers
 import { isFileValid } from "@/helpers/file";
 import { insertEmptyParagraphAtNodeBoundaries } from "@/helpers/insert-empty-paragraph-at-node-boundary";
@@ -71,7 +71,7 @@ export function CustomImageExtension(props: Props) {
             if (
               props?.file &&
               !isFileValid({
-                acceptedMimeTypes: ACCEPTED_IMAGE_MIME_TYPES,
+                acceptedMimeTypes: [...ACCEPTED_IMAGE_MIME_TYPES, ...ACCEPTED_ATTACHMENT_MIME_TYPES],
                 file: props.file,
                 maxFileSize: this.storage.maxFileSize,
                 onError: (_error, message) => alert(message),

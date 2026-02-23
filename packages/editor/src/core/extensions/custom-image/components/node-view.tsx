@@ -12,6 +12,7 @@ import type { CustomImageExtensionType, TCustomImageAttributes } from "../types"
 import { ECustomImageAttributeNames, ECustomImageStatus } from "../types";
 import { hasImageDuplicationFailed } from "../utils";
 import { CustomImageBlock } from "./block";
+import { AttachmentBlock } from "./attachment-block";
 import { CustomImageUploader } from "./uploader";
 
 export type CustomImageNodeViewProps = Omit<NodeViewProps, "extension" | "updateAttributes"> & {
@@ -24,7 +25,7 @@ export type CustomImageNodeViewProps = Omit<NodeViewProps, "extension" | "update
 
 export function CustomImageNodeView(props: CustomImageNodeViewProps) {
   const { editor, extension, node, updateAttributes } = props;
-  const { src: imgNodeSrc, status } = node.attrs;
+  const { src: imgNodeSrc, status, fileType } = node.attrs;
 
   const [isUploaded, setIsUploaded] = useState(!!imgNodeSrc);
   const [resolvedSrc, setResolvedSrc] = useState<string | undefined>(undefined);
@@ -139,7 +140,9 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
   return (
     <NodeViewWrapper key={node.attrs[ECustomImageAttributeNames.ID]}>
       <div className="p-0 mx-0 my-2" data-drag-handle ref={imageComponentRef}>
-        {shouldShowBlock && !hasDuplicationFailed ? (
+        {fileType === "attachment" && isUploaded ? (
+          <AttachmentBlock {...props} />
+        ) : shouldShowBlock && !hasDuplicationFailed ? (
           <CustomImageBlock
             editorContainer={editorContainer}
             imageFromFileSystem={imageFromFileSystem}
@@ -154,7 +157,7 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
             failedToLoadImage={failedToLoadImage}
             hasDuplicationFailed={hasDuplicationFailed}
             loadImageFromFileSystem={setImageFromFileSystem}
-            maxFileSize={(editor.storage.imageComponent as { maxFileSize?: number } | undefined)?.maxFileSize ?? 0}
+            maxFileSize={extension.storage.maxFileSize}
             setIsUploaded={setIsUploaded}
             {...props}
           />

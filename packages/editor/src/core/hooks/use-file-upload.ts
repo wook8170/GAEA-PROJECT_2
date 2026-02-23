@@ -102,7 +102,7 @@ export const useUploader = (args: TUploaderArgs) => {
 type TDropzoneArgs = {
   editor: Editor;
   getPos: NodeViewProps["getPos"];
-  type: Extract<TEditorCommands, "attachment" | "image">;
+  type: Extract<TEditorCommands, "image" | "attach">;
   uploader: (file: File) => Promise<void>;
 };
 
@@ -167,7 +167,7 @@ type TMultipleFileArgs = {
   editor: Editor;
   filesList: FileList;
   pos: number;
-  type: Extract<TEditorCommands, "attachment" | "image">;
+  type: Extract<TEditorCommands, "image" | "attach">;
   uploader: (file: File) => Promise<void>;
 };
 

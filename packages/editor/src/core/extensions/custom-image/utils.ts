@@ -19,6 +19,10 @@ export const DEFAULT_CUSTOM_IMAGE_ATTRIBUTES: TCustomImageAttributes = {
   [ECustomImageAttributeNames.ASPECT_RATIO]: null,
   [ECustomImageAttributeNames.ALIGNMENT]: "left",
   [ECustomImageAttributeNames.STATUS]: ECustomImageStatus.PENDING,
+  [ECustomImageAttributeNames.FILE_TYPE]: null,
+  [ECustomImageAttributeNames.FILE_NAME]: null,
+  [ECustomImageAttributeNames.FILE_SIZE]: null,
+  [ECustomImageAttributeNames.MIME_TYPE]: null,
 };
 
 export const getImageComponentImageFileMap = (editor: Editor) => editor.storage.imageComponent?.fileMap;

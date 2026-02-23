@@ -4,13 +4,13 @@
  * See the LICENSE file for details.
  */
 
-import { ImageIcon, RotateCcw } from "lucide-react";
+import { ImageIcon, Paperclip, RotateCcw } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 // plane imports
 import { cn } from "@plane/utils";
 // constants
-import { ACCEPTED_IMAGE_MIME_TYPES } from "@/constants/config";
+import { ACCEPTED_IMAGE_MIME_TYPES, ACCEPTED_ATTACHMENT_MIME_TYPES } from "@/constants/config";
 import { CORE_EXTENSIONS } from "@/constants/extension";
 // helpers
 import type { EFileError } from "@/helpers/file";
@@ -29,19 +29,19 @@ type CustomImageUploaderProps = CustomImageNodeViewProps & {
   setIsUploaded: (isUploaded: boolean) => void;
 };
 
-export function CustomImageUploader(props: CustomImageUploaderProps) {
+export const CustomImageUploader = (props: CustomImageUploaderProps) => {
   const {
     editor,
     extension,
-    failedToLoadImage,
     getPos,
-    loadImageFromFileSystem,
-    maxFileSize,
     node,
     selected,
-    setIsUploaded,
     updateAttributes,
+    failedToLoadImage,
     hasDuplicationFailed,
+    loadImageFromFileSystem,
+    maxFileSize,
+    setIsUploaded,
   } = props;
   // refs
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,14 +53,25 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
   const isTouchDevice = !!editor.storage.utility.isTouchDevice;
 
   const onUpload = useCallback(
-    (url: string) => {
+    (url: string, file?: File) => {
       if (url) {
         if (!imageEntityId) return;
         setIsUploaded(true);
+        
+        // Determine file type
+        let fileType: "image" | "attachment" = "image";
+        if (file) {
+          fileType = ACCEPTED_IMAGE_MIME_TYPES.includes(file.type) ? "image" : "attachment";
+        }
+        
         // Update the node view's src attribute post upload
         updateAttributes({
           src: url,
           status: ECustomImageStatus.UPLOADED,
+          fileType,
+          fileName: file?.name || null,
+          fileSize: file?.size || null,
+          mimeType: file?.type || null,
         });
         imageComponentImageFileMap?.delete(imageEntityId);
 
@@ -115,7 +126,7 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
 
   // hooks
   const { isUploading: isImageBeingUploaded, uploadFile } = useUploader({
-    acceptedMimeTypes: ACCEPTED_IMAGE_MIME_TYPES,
+    acceptedMimeTypes: [...ACCEPTED_IMAGE_MIME_TYPES, ...ACCEPTED_ATTACHMENT_MIME_TYPES],
     editorCommand: uploadImageEditorCommand,
     handleProgressStatus,
     loadFileFromFileSystem: loadImageFromFileSystem,
@@ -163,11 +174,19 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
       if (!filesList || pos === undefined) {
         return;
       }
+      
+      // Determine file type from first file
+      const firstFile = filesList[0];
+      let fileType: "image" | "attach" = "image";
+      if (firstFile) {
+        fileType = ACCEPTED_IMAGE_MIME_TYPES.includes(firstFile.type) ? "image" : "attach";
+      }
+      
       await uploadFirstFileAndInsertRemaining({
         editor,
         filesList,
         pos,
-        type: "image",
+        type: fileType,
         uploader: uploadFile,
       });
     },
@@ -184,7 +203,7 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
   const getDisplayMessage = useCallback(() => {
     const isUploading = isImageBeingUploaded;
     if (isErrorState) {
-      return "Error loading image";
+      return "Error loading file";
     }
 
     if (isUploading) {
@@ -192,10 +211,10 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
     }
 
     if (draggedInside && editor.isEditable) {
-      return "Drop image here";
+      return "Drop file here";
     }
 
-    return "Add an image";
+    return "Add a file";
   }, [draggedInside, editor.isEditable, isErrorState, isImageBeingUploaded]);
 
   const handleRetryClick = useCallback(
@@ -208,14 +227,18 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
     [hasDuplicationFailed, editor.isEditable, updateAttributes]
   );
 
+  const getFileIcon = useCallback(() => {
+    return <Paperclip className="size-4" />;
+  }, []);
+
   return (
     <div
       className={cn(
-        "image-upload-component flex items-center justify-start gap-2 py-3 px-2 rounded-lg text-tertiary bg-layer-3 border border-dashed transition-all duration-200 ease-in-out cursor-default",
+        "image-upload-component flex items-center justify-start gap-2 py-3 px-2 rounded-lg text-accent-secondary bg-accent-primary/5 border border-dashed border-accent-primary/50 transition-all duration-200 ease-in-out cursor-default",
         {
           "border-subtle": !(selected && editor.isEditable && !isErrorState),
-          "hover:text-secondary hover:bg-layer-3-hover cursor-pointer": editor.isEditable && !isErrorState,
-          "bg-layer-3-hover text-secondary": draggedInside && editor.isEditable && !isErrorState,
+          "hover:text-accent-secondary hover:bg-accent-primary/10 cursor-pointer": editor.isEditable && !isErrorState,
+          "bg-accent-primary/10 text-accent-secondary": draggedInside && editor.isEditable && !isErrorState,
           "text-accent-secondary bg-accent-primary/10 hover:bg-accent-primary/10 hover:text-accent-secondary":
             selected && editor.isEditable && !isErrorState,
           "text-danger-primary bg-danger-subtle cursor-default": isErrorState,
@@ -235,7 +258,7 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
         }
       }}
     >
-      <ImageIcon className="size-4" />
+      {getFileIcon()}
       <div className="text-14 font-medium flex-1">{getDisplayMessage()}</div>
       {hasDuplicationFailed && editor.isEditable && (
         <button
@@ -258,7 +281,7 @@ export function CustomImageUploader(props: CustomImageUploaderProps) {
         ref={fileInputRef}
         hidden
         type="file"
-        accept={ACCEPTED_IMAGE_MIME_TYPES.join(",")}
+        accept="*"
         onChange={onFileChange}
         multiple
       />
