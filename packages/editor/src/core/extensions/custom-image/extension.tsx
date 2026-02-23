@@ -15,11 +15,16 @@ import { CustomImageBlock } from "@/extensions/custom-image/components/block";
 import { CustomImageNodeView } from "@/extensions/custom-image/components/node-view";
 import { CustomImageUploader } from "@/extensions/custom-image/components/uploader";
 import { DEFAULT_CUSTOM_IMAGE_ATTRIBUTES } from "@/extensions/custom-image/utils";
-import { mergeAttributes } from "@tiptap/core";
-import { Node, Plugin, PluginKey } from "@tiptap/pm/state";
-import { BaseExtension } from "@/extensions/base";
+import { mergeAttributes, Node } from "@tiptap/core";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { TEditorCommands } from "@/types";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
+// local imports
+import { CustomImageExtensionConfig } from "./extension-config";
+import type { TFileHandler, CustomImageExtensionOptions, CustomImageExtensionStorage } from "./types";
+import { ECustomImageAttributeNames } from "./types";
+import { getImageComponentImageFileMap } from "./utils";
+import { insertEmptyParagraphAtNodeBoundaries } from "@/helpers/insert-empty-paragraph-at-node-boundary";
+import type { CustomImageNodeViewProps } from "./components/node-view";
 
 type Props = {
   fileHandler: TFileHandler;
@@ -30,7 +35,7 @@ export function CustomImageExtension(props: Props) {
   const { fileHandler, isEditable } = props;
   // derived values
   const { getAssetSrc, getAssetDownloadSrc, restore: restoreImageFn } = fileHandler;
-
+  
   return CustomImageExtensionConfig.extend<CustomImageExtensionOptions, CustomImageExtensionStorage>({
     selectable: isEditable,
     draggable: isEditable,
@@ -74,10 +79,16 @@ export function CustomImageExtension(props: Props) {
                 acceptedMimeTypes: [...ACCEPTED_IMAGE_MIME_TYPES, ...ACCEPTED_ATTACHMENT_MIME_TYPES],
                 file: props.file,
                 maxFileSize: this.storage.maxFileSize,
-                onError: (_error, message) => setToast({
-              type: TOAST_TYPE.ERROR,
-              title: message,
-            }),
+                onError: (_error, message) => {
+              // Use global toast function
+              const globalToast = (window as any)?.planeToast;
+              if (globalToast) {
+                globalToast({
+                  type: "error",
+                  title: message,
+                });
+              }
+            },
               })
             ) {
               return false;

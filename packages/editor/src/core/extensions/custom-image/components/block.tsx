@@ -275,7 +275,9 @@ export function CustomImageBlock(props: CustomImageBlockProps) {
                 }
                 if (isTouchDevice) {
                   const refreshedSrc = await extension.options.getImageSource?.(imgNodeSrc);
-                  imageRef.current.src = refreshedSrc;
+                  if (refreshedSrc) {
+                    imageRef.current.src = refreshedSrc;
+                  }
                 } else {
                   imageRef.current.src = resolvedImageSrc;
                 }

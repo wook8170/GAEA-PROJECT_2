@@ -8,6 +8,11 @@ import type { Node } from "@tiptap/core";
 // types
 import type { TFileHandler } from "@/types";
 
+export type { TFileHandler };
+
+// Toast callback type
+export type TToastCallback = (type: "error" | "success" | "info" | "warning", title: string, message?: string) => void;
+
 export enum ECustomImageAttributeNames {
   ID = "id",
   WIDTH = "width",
@@ -65,11 +70,14 @@ export type InsertImageComponentProps = {
 };
 
 export type CustomImageExtensionOptions = {
-  getImageDownloadSource: TFileHandler["getAssetDownloadSrc"];
-  getImageSource: TFileHandler["getAssetSrc"];
-  restoreImage: TFileHandler["restore"];
+  getImageSource?: (id: string) => Promise<string>;
+  getAssetDownloadSrc?: (id: string) => Promise<string>;
+  restore?: TFileHandler["restore"];
   uploadImage?: TFileHandler["upload"];
   duplicateImage?: TFileHandler["duplicate"];
+  restoreImage?: TFileHandler["restore"];
+  getImageDownloadSource?: (id: string) => Promise<string>;
+  showToast?: TToastCallback;
 };
 
 export type CustomImageExtensionStorage = {

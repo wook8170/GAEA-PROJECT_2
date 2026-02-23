@@ -9,7 +9,6 @@ import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 // plane imports
 import { cn } from "@plane/utils";
-import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 // constants
 import { ACCEPTED_IMAGE_MIME_TYPES, ACCEPTED_ATTACHMENT_MIME_TYPES } from "@/constants/config";
 import { CORE_EXTENSIONS } from "@/constants/extension";
@@ -122,10 +121,17 @@ export const CustomImageUploader = (props: CustomImageUploaderProps) => {
   );
 
   const handleInvalidFile = useCallback((_error: EFileError, _file: File, message: string) => {
-    setToast({
-      type: TOAST_TYPE.ERROR,
-      title: message,
-    });
+    // Use global toast function
+    const globalToast = (window as any)?.planeToast;
+    if (globalToast) {
+      globalToast({
+        type: "error",
+        title: message,
+      });
+    } else {
+      // Fallback to alert
+      alert(message);
+    }
   }, []);
 
   // hooks
