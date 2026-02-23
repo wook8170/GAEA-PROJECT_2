@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { Download, FileText, FileImage, FileArchive, FileCode, FileVideo, FileAudio, File } from "lucide-react";
+import { Download, FileText, FileImage, FileArchive, FileCode, FileVideo, FileAudio, File, FileSpreadsheet, Presentation, FilePlus } from "lucide-react";
 import { useCallback } from "react";
 // plane imports
 import { cn } from "@plane/utils";
@@ -54,7 +54,51 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
     }
     
     // Document files by extension
-    if (['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'pages', 'numbers', 'key'].includes(extension || '')) {
+    if (['pdf'].includes(extension || '')) {
+      return <FileText className="size-4 text-red-500" />;
+    }
+    
+    // Microsoft Office files
+    if (['doc', 'docx'].includes(extension || '')) {
+      return <FileText className="size-4 text-blue-600" />;
+    }
+    
+    if (['xls', 'xlsx'].includes(extension || '')) {
+      return <FileSpreadsheet className="size-4 text-green-600" />;
+    }
+    
+    if (['ppt', 'pptx'].includes(extension || '')) {
+      return <Presentation className="size-4 text-orange-600" />;
+    }
+    
+    // Apple iWork files
+    if (['pages'].includes(extension || '')) {
+      return <FileText className="size-4 text-blue-500" />;
+    }
+    
+    if (['numbers'].includes(extension || '')) {
+      return <FileSpreadsheet className="size-4 text-green-500" />;
+    }
+    
+    if (['key'].includes(extension || '')) {
+      return <Presentation className="size-4 text-orange-500" />;
+    }
+    
+    // OpenDocument files
+    if (['odt'].includes(extension || '')) {
+      return <FileText className="size-4 text-blue-500" />;
+    }
+    
+    if (['ods'].includes(extension || '')) {
+      return <FileSpreadsheet className="size-4 text-green-500" />;
+    }
+    
+    if (['odp'].includes(extension || '')) {
+      return <Presentation className="size-4 text-orange-500" />;
+    }
+    
+    // Other document formats
+    if (['rtf'].includes(extension || '')) {
       return <FileText className="size-4 text-red-500" />;
     }
     
