@@ -27,6 +27,28 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
   const { editor, extension, node, updateAttributes } = props;
   const { src: imgNodeSrc, status, fileType } = node.attrs;
 
+  // Helper function to check if file is attachment based on extension
+  function isAttachmentFile(src: string): boolean {
+    if (!src) return false;
+    
+    const extension = src.split('.').pop()?.toLowerCase();
+    if (!extension) return false;
+    
+    // Common attachment extensions (non-image)
+    const attachmentExtensions = [
+      'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+      'txt', 'rtf', 'csv', 'zip', 'rar', '7z', 'tar', 'gz',
+      'hwp', 'hwpx', 'pages', 'numbers', 'key', 'odt', 'ods', 'odp'
+    ];
+    
+    // Image extensions
+    const imageExtensions = [
+      'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff', 'ico'
+    ];
+    
+    return attachmentExtensions.includes(extension) && !imageExtensions.includes(extension);
+  }
+
   const [isUploaded, setIsUploaded] = useState(!!imgNodeSrc);
   const [resolvedSrc, setResolvedSrc] = useState<string | undefined>(undefined);
   const [resolvedDownloadSrc, setResolvedDownloadSrc] = useState<string | undefined>(undefined);
@@ -69,12 +91,19 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
     setFailedToLoadImage(false);
 
     // For attachment files, we don't need to fetch image source
-    if (fileType === "attachment") {
+    console.log("🔍 NodeView - fileType:", fileType, "imgNodeSrc:", imgNodeSrc);
+    
+    // Check if this is actually an attachment based on file extension
+    const isAttachment = fileType === "attachment" || (imgNodeSrc && isAttachmentFile(imgNodeSrc));
+    console.log("🔍 NodeView - isAttachment:", isAttachment);
+    
+    if (isAttachment) {
       // For attachments, just get download source without failing
       const getAttachmentSource = async () => {
         try {
           const downloadUrl = await extension.options.getImageDownloadSource?.(imgNodeSrc);
           setResolvedDownloadSrc(downloadUrl);
+          console.log("🔍 NodeView - Attachment download URL resolved:", downloadUrl);
         } catch (error) {
           console.error("Error fetching attachment download source:", error);
           // Don't set failedToLoadImage for attachments, just log the error
@@ -154,12 +183,25 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
   const hasDuplicationFailed = hasImageDuplicationFailed(status);
   const hasValidImageSource = imageFromFileSystem || (isUploaded && resolvedSrc);
   const hasValidAttachmentSource = isUploaded && resolvedDownloadSrc;
-  const shouldShowBlock = (fileType === "attachment" ? hasValidAttachmentSource : hasValidImageSource) && !failedToLoadImage && !hasDuplicationFailed;
+  const isActuallyAttachment = fileType === "attachment" || (imgNodeSrc && isAttachmentFile(imgNodeSrc));
+  const shouldShowBlock = (isActuallyAttachment ? hasValidAttachmentSource : hasValidImageSource) && !failedToLoadImage && !hasDuplicationFailed;
+
+  console.log("🔍 NodeView - State:", {
+    fileType,
+    isUploaded,
+    resolvedSrc,
+    resolvedDownloadSrc,
+    failedToLoadImage,
+    hasDuplicationFailed,
+    hasValidAttachmentSource,
+    isActuallyAttachment,
+    shouldShowBlock
+  });
 
   return (
     <NodeViewWrapper key={node.attrs[ECustomImageAttributeNames.ID]}>
       <div className="p-0 mx-0 my-2" data-drag-handle ref={imageComponentRef}>
-        {fileType === "attachment" && isUploaded ? (
+        {isActuallyAttachment && isUploaded ? (
           <AttachmentBlock {...props} />
         ) : shouldShowBlock && !hasDuplicationFailed ? (
           <CustomImageBlock
