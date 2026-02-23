@@ -12,7 +12,6 @@ import useSWR from "swr";
 import { getButtonStyling } from "@plane/propel/button";
 import type { TSearchEntityRequestPayload, TWebhookConnectionQueryParams } from "@plane/types";
 import { EFileAssetType } from "@plane/types";
-// plane ui
 // plane utils
 import { cn } from "@plane/utils";
 // components

@@ -25,6 +25,7 @@ import { useIssueStoreType } from "@/hooks/use-issue-layout-store";
 import { useIssuesActions } from "@/hooks/use-issues-actions";
 import { useTimeLineChart } from "@/hooks/use-timeline-chart";
 // plane web hooks
+import { useAutoScheduleDependency } from "@/plane-web/components/gantt-chart/dependency/use-auto-schedule";
 import { useBulkOperationStatus } from "@/plane-web/hooks/use-bulk-operation-status";
 
 import { IssueLayoutHOC } from "../issue-layout-HOC";
@@ -91,22 +92,34 @@ export const BaseGanttRoot = observer(function BaseGanttRoot(props: IBaseGanttRo
   };
 
   const isAllowed = allowPermissions([EUserPermissions.ADMIN, EUserPermissions.MEMBER], EUserPermissionsLevel.PROJECT);
+  const { cascadeFromBlock, enforceBlockedByConstraint } = useAutoScheduleDependency(isEpic ? ("EPICS" as any) : undefined);
   const updateBlockDates = useCallback(
-    (
+    async (
       updates: {
         id: string;
         start_date?: string;
         target_date?: string;
       }[]
-    ) =>
-      issues.updateIssueDates(workspaceSlug.toString(), updates, projectId.toString()).catch(() => {
+    ) => {
+      try {
+        // Enforce: blocked items cannot start before their blockers end
+        const constrainedUpdates = enforceBlockedByConstraint(updates);
+        await issues.updateIssueDates(workspaceSlug.toString(), constrainedUpdates, projectId.toString());
+        // After dates are saved, cascade to downstream blocked items
+        for (const update of constrainedUpdates) {
+          if (update.target_date) {
+            await cascadeFromBlock(update.id, update.target_date);
+          }
+        }
+      } catch {
         setToast({
           type: TOAST_TYPE.ERROR,
           title: t("toast.error"),
           message: "Error while updating work item dates, Please try again Later",
         });
-      }),
-    [issues, projectId, workspaceSlug]
+      }
+    },
+    [issues, projectId, workspaceSlug, cascadeFromBlock, enforceBlockedByConstraint]
   );
 
   const quickAdd =

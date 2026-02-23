@@ -33,7 +33,7 @@ export const PageHeaderActions = observer(function PageHeaderActions(props: Prop
       <PageArchivedBadge page={page} />
       <PageOfflineBadge page={page} />
       <PageLockControl page={page} />
-      <PageMoveControl page={page} />
+      <PageMoveControl page={page} storeType={storeType} />
       <PageCopyLinkControl page={page} />
       <PageFavoriteControl page={page} />
       <PageShareControl page={page} storeType={storeType} />

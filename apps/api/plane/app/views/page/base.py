@@ -418,6 +418,61 @@ class PageViewSet(BaseViewSet):
         ).delete(soft=False)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def move(self, request, slug, project_id, page_id):
+        new_project_id = request.data.get("new_project_id")
+        if not new_project_id:
+            return Response(
+                {"error": "new_project_id is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        page = Page.objects.get(
+            pk=page_id,
+            workspace__slug=slug,
+            projects__id=project_id,
+            project_pages__deleted_at__isnull=True,
+        )
+
+        # only owner or admin can move
+        if page.owned_by_id != request.user.id and not ProjectMember.objects.filter(
+            workspace__slug=slug,
+            member=request.user,
+            role=20,
+            project_id=project_id,
+            is_active=True,
+        ).exists():
+            return Response(
+                {"error": "Only admin or owner can move the page"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # verify target project exists in the same workspace
+        if not Project.objects.filter(
+            pk=new_project_id,
+            workspace__slug=slug,
+            archived_at__isnull=True,
+        ).exists():
+            return Response(
+                {"error": "Target project not found in this workspace"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # remove from current project, add to new project
+        ProjectPage.objects.filter(
+            page_id=page_id,
+            project_id=project_id,
+        ).delete()
+
+        ProjectPage.objects.create(
+            workspace_id=page.workspace_id,
+            project_id=new_project_id,
+            page_id=page_id,
+            created_by=request.user,
+            updated_by=request.user,
+        )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     def summary(self, request, slug, project_id):
         queryset = (
             Page.objects.filter(workspace__slug=slug)

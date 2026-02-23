@@ -14,6 +14,8 @@ type TDuplicateWorkItemModalProps = {
   projectId: string;
 };
 
-export function DuplicateWorkItemModal(_props: TDuplicateWorkItemModalProps) {
+export function DuplicateWorkItemModal(props: TDuplicateWorkItemModalProps) {
+  const { isOpen } = props;
+  if (!isOpen) return <></>;
   return <></>;
 }

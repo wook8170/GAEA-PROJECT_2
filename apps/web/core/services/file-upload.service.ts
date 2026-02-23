@@ -10,7 +10,7 @@ import axios from "axios";
 import { APIService } from "@/services/api.service";
 
 export class FileUploadService extends APIService {
-  private cancelSource: any;
+  private activeSources: Map<string, ReturnType<typeof axios.CancelToken.source>> = new Map();
 
   constructor() {
     super("");
@@ -21,12 +21,14 @@ export class FileUploadService extends APIService {
     data: FormData,
     uploadProgressHandler?: AxiosRequestConfig["onUploadProgress"]
   ): Promise<void> {
-    this.cancelSource = axios.CancelToken.source();
+    const source = axios.CancelToken.source();
+    const uploadId = `${Date.now()}-${Math.random()}`;
+    this.activeSources.set(uploadId, source);
     return this.post(url, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-      cancelToken: this.cancelSource.token,
+      cancelToken: source.token,
       withCredentials: false,
       onUploadProgress: uploadProgressHandler,
     })
@@ -37,10 +39,14 @@ export class FileUploadService extends APIService {
         } else {
           throw error?.response?.data;
         }
+      })
+      .finally(() => {
+        this.activeSources.delete(uploadId);
       });
   }
 
   cancelUpload() {
-    this.cancelSource.cancel("Upload canceled");
+    this.activeSources.forEach((source) => source.cancel("Upload canceled"));
+    this.activeSources.clear();
   }
 }

@@ -11,6 +11,6 @@ type TIssueAdditionalPropertiesActivity = {
   ends: "top" | "bottom" | undefined;
 };
 
-export function IssueAdditionalPropertiesActivity(_props: TIssueAdditionalPropertiesActivity) {
+export function IssueAdditionalPropertiesActivity(props: TIssueAdditionalPropertiesActivity) {
   return <></>;
 }

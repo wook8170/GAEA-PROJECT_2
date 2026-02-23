@@ -5,6 +5,7 @@
  */
 
 import React, { useCallback, useMemo } from "react";
+import { useEditorState } from "@tiptap/react";
 import { FileIcon, Download, Loader2, AlertCircle } from "lucide-react";
 // plane imports
 import { cn } from "@plane/utils";
@@ -25,6 +26,12 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
     const { id, name, size, type, src } = node.attrs;
 
     const isEditable = editor.isEditable;
+
+    // Upload progress from editor storage
+    const uploadProgress: number | undefined = useEditorState({
+        editor,
+        selector: ({ editor }) => editor.storage.utility?.assetsUploadStatus?.[id],
+    });
 
     // Format file size
     const formattedSize = useMemo(() => {
@@ -55,7 +62,7 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
     return (
         <div
             className={cn(
-                "group flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 ease-in-out select-none",
+                "group relative flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 ease-in-out select-none",
                 {
                     "bg-layer-2 hover:bg-layer-2-hover cursor-pointer border-subtle": isEditable && !isError,
                     "border-danger-base bg-danger-subtle text-danger-primary": isError,
@@ -87,7 +94,7 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
                     "text-14 font-medium truncate leading-tight",
                     isError ? "text-danger-primary" : "text-primary"
                 )}>
-                    {isError ? "Error uploading file" : isUploading ? "Uploading..." : (name || (isEditable ? "Click to add a file" : "No file attached"))}
+                    {isError ? "Error uploading file" : isUploading ? `Uploading${uploadProgress !== undefined ? ` ${uploadProgress}%` : "..."}` : (name || (isEditable ? "Click to add a file" : "No file attached"))}
                 </span>
                 <span className={cn(
                     "text-12",
@@ -102,6 +109,16 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
                     )}
                 </span>
             </div>
+
+            {/* Upload progress bar */}
+            {isUploading && uploadProgress !== undefined && (
+                <div className="absolute bottom-0 left-0 right-0 h-[3px] rounded-b-lg overflow-hidden bg-black/10">
+                    <div
+                        className="h-full bg-accent-primary transition-all duration-300 ease-out"
+                        style={{ width: `${uploadProgress}%` }}
+                    />
+                </div>
+            )}
 
             {isUploaded && src && (
                 <button

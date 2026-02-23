@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { observer } from "mobx-react";
 // plane imports
 import { API_BASE_URL, LIVE_BASE_PATH, LIVE_BASE_URL } from "@plane/constants";
@@ -98,6 +98,9 @@ export const PageEditorBody = observer(function PageEditorBody(props: Props) {
   } = props;
   // refs
   const titleEditorRef = useRef<EditorTitleRefApi>(null);
+  // Editor initialization
+  const [isEditorReady, setIsEditorReady] = useState(false);
+
   // store hooks
   const { data: currentUser } = useUser();
   const { getWorkspaceBySlug } = useWorkspace();
@@ -109,6 +112,7 @@ export const PageEditorBody = observer(function PageEditorBody(props: Props) {
     editor: { editorRef, updateAssetsList },
     setSyncingStatus,
   } = page;
+
   const workspaceId = getWorkspaceBySlug(workspaceSlug)?.id ?? "";
   // use editor mention
   const { fetchMentions } = useEditorMention({
@@ -301,7 +305,14 @@ export const PageEditorBody = observer(function PageEditorBody(props: Props) {
             aiHandler={{
               menu: getAIMenu,
             }}
-            onAssetChange={updateAssetsList}
+            onAssetChange={(assets) => {
+              console.log("🔍 Editor Body - onAssetChange called:", {
+                assetsCount: assets.length,
+                assetIds: assets.map(a => a.id),
+                timestamp: Date.now()
+              });
+              updateAssetsList(assets);
+            }}
             extendedEditorProps={extendedEditorProps}
             isFetchingFallbackBinary={isFetchingFallbackBinary}
           />

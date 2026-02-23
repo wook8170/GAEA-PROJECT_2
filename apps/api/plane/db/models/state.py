@@ -124,3 +124,30 @@ class State(ProjectBaseModel):
                 self.sequence = last_id + 15000
 
         return super().save(*args, **kwargs)
+
+
+class StateTransition(ProjectBaseModel):
+    from_state = models.ForeignKey(
+        State, on_delete=models.CASCADE, related_name="transitions_from"
+    )
+    to_state = models.ForeignKey(
+        State, on_delete=models.CASCADE, related_name="transitions_to"
+    )
+    is_allowed = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ["project", "from_state", "to_state", "deleted_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["project", "from_state", "to_state"],
+                condition=Q(deleted_at__isnull=True),
+                name="state_transition_unique_when_deleted_at_null",
+            )
+        ]
+        verbose_name = "State Transition"
+        verbose_name_plural = "State Transitions"
+        db_table = "state_transitions"
+        ordering = ("from_state__sequence", "to_state__sequence")
+
+    def __str__(self):
+        return f"{self.from_state.name} -> {self.to_state.name}"

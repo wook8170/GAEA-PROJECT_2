@@ -10,6 +10,10 @@ type TProps = {
   workspace?: IWorkspace;
 };
 
-export function SubscriptionPill(props: TProps) {
-  return <></>;
+export function SubscriptionPill(_props: TProps) {
+  return (
+    <span className="inline-flex items-center rounded-full px-2 py-0.5 text-caption-sm-medium bg-green-500/10 text-green-600">
+      Free
+    </span>
+  );
 }

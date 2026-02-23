@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import type { FC } from "react";
+import { Clock } from "lucide-react";
 
 type TIssueWorklogProperty = {
   workspaceSlug: string;
@@ -14,5 +14,10 @@ type TIssueWorklogProperty = {
 };
 
 export function IssueWorklogProperty(_props: TIssueWorklogProperty) {
-  return <></>;
+  return (
+    <div className="flex items-center gap-2 text-secondary">
+      <Clock className="size-3.5 flex-shrink-0" />
+      <span className="text-body-sm-regular">Time tracking</span>
+    </div>
+  );
 }

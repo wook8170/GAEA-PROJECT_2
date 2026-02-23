@@ -40,8 +40,15 @@ export class PageEditorInstance implements TPageEditorInstance {
   };
 
   updateAssetsList: TPageEditorInstance["updateAssetsList"] = (assets) => {
+    console.log("🔍 MobX Store - updateAssetsList called:", {
+      assetsCount: assets.length,
+      assetIds: assets.map(a => a.id),
+      timestamp: Date.now()
+    });
+    
     runInAction(() => {
       this.assetsList = assets;
+      console.log("🔍 MobX Store - assetsList updated in runInAction");
     });
   };
 }

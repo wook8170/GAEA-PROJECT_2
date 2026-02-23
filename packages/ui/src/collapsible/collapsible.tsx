@@ -4,8 +4,8 @@
  * See the LICENSE file for details.
  */
 
-import { Disclosure, Transition } from "@headlessui/react";
-import React, { useState, useEffect, useCallback } from "react";
+import { Transition } from "@headlessui/react";
+import React, { useState, useCallback } from "react";
 
 export type TCollapsibleProps = {
   title: string | React.ReactNode;
@@ -21,13 +21,10 @@ export type TCollapsibleProps = {
 export function Collapsible(props: TCollapsibleProps) {
   const { title, children, buttonRef, className, buttonClassName, isOpen, onToggle, defaultOpen } = props;
   // state
-  const [localIsOpen, setLocalIsOpen] = useState<boolean>(isOpen || defaultOpen ? true : false);
+  const [localIsOpen, setLocalIsOpen] = useState<boolean>(isOpen ?? defaultOpen ?? false);
 
-  useEffect(() => {
-    if (isOpen !== undefined) {
-      setLocalIsOpen(isOpen);
-    }
-  }, [isOpen]);
+  // Derive the effective open state: controlled (isOpen) takes precedence over local state
+  const effectiveIsOpen = isOpen !== undefined ? isOpen : localIsOpen;
 
   // handlers
   const handleOnClick = useCallback(() => {
@@ -39,12 +36,12 @@ export function Collapsible(props: TCollapsibleProps) {
   }, [isOpen, onToggle]);
 
   return (
-    <Disclosure as="div" className={className}>
-      <Disclosure.Button ref={buttonRef} className={buttonClassName} onClick={handleOnClick}>
+    <div className={className}>
+      <button ref={buttonRef} type="button" className={buttonClassName} onClick={handleOnClick}>
         {title}
-      </Disclosure.Button>
+      </button>
       <Transition
-        show={localIsOpen}
+        show={effectiveIsOpen}
         enter="transition-all duration-300 ease-in-out"
         enterFrom="grid-rows-[0fr] opacity-0"
         enterTo="grid-rows-[1fr] opacity-100"
@@ -53,10 +50,10 @@ export function Collapsible(props: TCollapsibleProps) {
         leaveTo="grid-rows-[0fr] opacity-0"
         className="grid overflow-hidden"
       >
-        <Disclosure.Panel static className="min-h-0">
+        <div className="min-h-0">
           {children}
-        </Disclosure.Panel>
+        </div>
       </Transition>
-    </Disclosure>
+    </div>
   );
 }

@@ -11,5 +11,11 @@ export type TInboxSourcePill = {
 };
 
 export function InboxSourcePill(props: TInboxSourcePill) {
-  return <></>;
+  const { source } = props;
+  if (!source) return <></>;
+  return (
+    <span className="inline-flex items-center rounded px-1.5 py-0.5 text-caption-sm-medium bg-surface-2 text-tertiary">
+      {String(source)}
+    </span>
+  );
 }

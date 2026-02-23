@@ -4,36 +4,23 @@
  * See the LICENSE file for details.
  */
 
-// plane imports
-import { getButtonStyling } from "@plane/propel/button";
+import { FileText } from "lucide-react";
 import { cn } from "@plane/utils";
-// components
-import { ProIcon } from "@/components/common/pro-icon";
 
 export function IssueEmbedUpgradeCard(props: any) {
   return (
     <div
       className={cn(
-        "w-full bg-layer-1 rounded-md border-[0.5px] border-subtle shadow-raised-100 flex items-center justify-between gap-5 px-5 py-2 max-md:flex-wrap",
+        "w-full bg-layer-1 rounded-md border-[0.5px] border-subtle shadow-raised-100 flex items-center gap-4 px-5 py-3 max-md:flex-wrap",
         {
-          "border-2": props.selected,
+          "border-2 border-accent-primary": props.selected,
         }
       )}
     >
-      <div className="flex items-center gap-4">
-        <ProIcon className="flex-shrink-0 size-4" />
-        <p className="text-secondary !text-14">
-          Embed and access issues in pages seamlessly, upgrade to Plane Pro now.
-        </p>
-      </div>
-      <a
-        href="https://plane.so/pro"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={cn(getButtonStyling("primary", "base"), "no-underline")}
-      >
-        Upgrade
-      </a>
+      <FileText className="flex-shrink-0 size-4 text-tertiary" />
+      <p className="text-secondary text-14">
+        Issue embed is available. Select a work item to embed it in this page.
+      </p>
     </div>
   );
 }

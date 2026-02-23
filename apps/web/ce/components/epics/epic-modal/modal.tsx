@@ -4,9 +4,8 @@
  * See the LICENSE file for details.
  */
 
-import type { FC } from "react";
-import React from "react";
 import type { TIssue } from "@plane/types";
+import { CreateUpdateIssueModal } from "@/components/issues/issue-modal/modal";
 
 export interface EpicModalProps {
   data?: Partial<TIssue>;
@@ -23,5 +22,19 @@ export interface EpicModalProps {
 }
 
 export function CreateUpdateEpicModal(props: EpicModalProps) {
-  return <></>;
+  const { data, isOpen, onClose, beforeFormSubmit, onSubmit, fetchIssueDetails, primaryButtonText, isProjectSelectionDisabled } = props;
+
+  return (
+    <CreateUpdateIssueModal
+      data={{ ...data, is_epic: true }}
+      isOpen={isOpen}
+      onClose={onClose}
+      beforeFormSubmit={beforeFormSubmit}
+      onSubmit={onSubmit}
+      fetchIssueDetails={fetchIssueDetails}
+      primaryButtonText={primaryButtonText}
+      isProjectSelectionDisabled={isProjectSelectionDisabled}
+      modalTitle={data?.id ? "Update Epic" : "Create Epic"}
+    />
+  );
 }

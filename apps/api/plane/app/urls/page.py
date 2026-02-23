@@ -73,4 +73,10 @@ urlpatterns = [
         PageDuplicateEndpoint.as_view(),
         name="page-duplicate",
     ),
+    # move page to another project
+    path(
+        "workspaces/<str:slug>/projects/<uuid:project_id>/pages/<uuid:page_id>/move/",
+        PageViewSet.as_view({"post": "move"}),
+        name="page-move",
+    ),
 ]

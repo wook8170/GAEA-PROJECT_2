@@ -261,7 +261,10 @@ export abstract class IssueDetail implements IIssueDetail {
     if (this.lastWidgetAction) this.lastWidgetAction = null;
   };
   setLastWidgetAction = (action: TWorkItemWidgets) => {
-    this.openWidgets = [action];
+    if (!this.openWidgets.includes(action)) {
+      this.openWidgets = [action, ...this.openWidgets];
+    }
+    this.lastWidgetAction = action;
   };
   toggleOpenWidget = (state: TWorkItemWidgets) => {
     if (this.openWidgets && this.openWidgets.includes(state))

@@ -9,6 +9,9 @@ import { observer } from "mobx-react";
 
 export type TIssueTypeActivity = { activityId: string; showIssue?: boolean; ends: "top" | "bottom" | undefined };
 
-export const IssueTypeActivity = observer(function IssueTypeActivity(_props: TIssueTypeActivity) {
-  return <></>;
+export const IssueTypeActivity = observer(function IssueTypeActivity(props: TIssueTypeActivity) {
+  const { activityId } = props;
+  return (
+    <span className="text-caption-md-regular text-tertiary">changed the work item type</span>
+  );
 });

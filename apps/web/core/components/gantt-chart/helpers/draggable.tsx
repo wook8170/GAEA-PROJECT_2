@@ -55,7 +55,7 @@ export const ChartDraggable = observer(function ChartDraggable(props: Props) {
         position={block.position}
       />
       <div
-        className={cn("relative z-[6] flex h-[30px] w-full items-center rounded-sm", {
+        className={cn("relative z-[6] flex h-[26px] w-full items-center rounded-sm", {
           "pointer-events-none": isMoving,
         })}
         onMouseDown={(e) => enableBlockMove && handleBlockDrag(e, "move")}

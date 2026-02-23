@@ -13,5 +13,11 @@ export type TCustomAutomationsRootProps = {
 };
 
 export function CustomAutomationsRoot(_props: TCustomAutomationsRootProps) {
-  return <></>;
+  return (
+    <div className="flex flex-col items-center justify-center py-10 text-center">
+      <p className="text-body-md-regular text-tertiary">
+        Custom automations can be configured from the project settings.
+      </p>
+    </div>
+  );
 }

@@ -133,3 +133,8 @@ from .draft import (
     DraftIssueSerializer,
     DraftIssueDetailSerializer,
 )
+
+from .workflow import StateTransitionSerializer
+from .team import TeamSerializer, TeamMemberSerializer, TeamProjectSerializer
+from .issue_property import IssuePropertySerializer, IssuePropertyValueSerializer
+from .template import IssueTemplateSerializer, ProjectTemplateSerializer

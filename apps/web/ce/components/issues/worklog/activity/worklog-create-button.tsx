@@ -13,6 +13,15 @@ type TIssueActivityWorklogCreateButton = {
   disabled: boolean;
 };
 
-export function IssueActivityWorklogCreateButton(_props: TIssueActivityWorklogCreateButton) {
-  return <></>;
+export function IssueActivityWorklogCreateButton(props: TIssueActivityWorklogCreateButton) {
+  const { disabled } = props;
+  if (disabled) return <></>;
+  return (
+    <button
+      type="button"
+      className="flex items-center gap-1.5 rounded-sm px-2 py-1 text-caption-md-medium text-accent-primary hover:bg-accent-primary/10 transition-colors"
+    >
+      Log time
+    </button>
+  );
 }

@@ -138,47 +138,24 @@ const AssetItem = observer(function AssetItem(props: AssetItemProps) {
 
 export const PageNavigationPaneAssetsTabPanel = observer(function PageNavigationPaneAssetsTabPanel(props: Props) {
   const { page } = props;
-  // hooks
-  const { t } = useTranslation();
   // derived values
   const {
     editor: { assetsList },
   } = page;
 
-  const images = useMemo(
-    () =>
-      assetsList.filter((asset) => [CORE_EXTENSIONS.IMAGE, CORE_EXTENSIONS.CUSTOM_IMAGE].includes(asset.type as any)),
-    [assetsList]
-  );
-  const attachments = useMemo(
-    () => assetsList.filter((asset) => asset.type === CORE_EXTENSIONS.ATTACHMENT),
-    [assetsList]
-  );
+  console.log("🔍 Assets Tab Panel - assetsList updated:", {
+    assetsCount: assetsList.length,
+    assetIds: assetsList.map(a => a.id),
+    timestamp: Date.now()
+  });
 
   if (assetsList.length === 0) return <PageNavigationPaneAssetsTabEmptyState />;
 
   return (
-    <div className="mt-5 space-y-6">
-      {images.length > 0 && (
-        <div className="space-y-4">
-          {images.map((asset) => (
-            <AssetItem key={asset.id} asset={asset} page={page} />
-          ))}
-        </div>
-      )}
-
-      {attachments.length > 0 && (
-        <div className="space-y-4">
-          <h4 className="text-12 font-semibold text-secondary uppercase tracking-wider">
-            {t("page_navigation_pane.tabs.assets.attachments_title") || "Attachments"}
-          </h4>
-          <div className="space-y-4">
-            {attachments.map((asset) => (
-              <AssetItem key={asset.id} asset={asset} page={page} />
-            ))}
-          </div>
-        </div>
-      )}
+    <div className="mt-5 space-y-4">
+      {assetsList.map((asset) => (
+        <AssetItem key={asset.id} asset={asset} page={page} />
+      ))}
     </div>
   );
 });

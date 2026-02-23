@@ -7,5 +7,12 @@
 import { observer } from "mobx-react";
 
 export const TeamEmptyState = observer(function TeamEmptyState() {
-  return <></>;
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <h3 className="text-lg font-medium">No team work items</h3>
+      <p className="mt-1 text-body-sm-regular text-tertiary max-w-sm">
+        Work items assigned to this team will appear here.
+      </p>
+    </div>
+  );
 });

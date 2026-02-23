@@ -12,6 +12,6 @@ type TDeDupeIssueButtonLabelProps = {
 };
 
 export function DeDupeIssueButtonLabel(props: TDeDupeIssueButtonLabelProps) {
-  const { isOpen, buttonLabel } = props;
-  return <></>;
+  const { buttonLabel } = props;
+  return <span className="text-caption-md-medium">{buttonLabel}</span>;
 }

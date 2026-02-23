@@ -15,6 +15,11 @@ type TIssueActivityWorklog = {
   ends?: "top" | "bottom";
 };
 
-export function IssueActivityWorklog(_props: TIssueActivityWorklog) {
-  return <></>;
+export function IssueActivityWorklog(props: TIssueActivityWorklog) {
+  const { activityComment } = props;
+  return (
+    <div className="flex items-center gap-1 text-caption-md-regular text-tertiary">
+      <span>logged time on this work item</span>
+    </div>
+  );
 }

@@ -234,6 +234,11 @@ from .webhook.base import (
 
 from .error_404 import custom_404_view
 
+from .workflow import StateTransitionViewSet
+from .team import TeamViewSet, TeamMemberViewSet, TeamProjectViewSet
+from .issue_property import IssuePropertyViewSet, IssuePropertyValueViewSet
+from .template import IssueTemplateViewSet, ProjectTemplateViewSet
+
 from .notification.base import MarkAllReadNotificationViewSet
 from .user.base import AccountEndpoint, ProfileEndpoint, UserSessionEndpoint
 

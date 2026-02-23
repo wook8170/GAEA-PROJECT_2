@@ -14,7 +14,7 @@ import { getEditorRefHelpers } from "@/helpers/editor-ref";
 // props
 import { CoreEditorProps } from "@/props";
 // types
-import type { TEditorHookProps } from "@/types";
+import type { TEditorHookProps, TEditorAsset } from "@/types";
 
 declare module "@tiptap/core" {
   interface Storage {
@@ -133,16 +133,25 @@ export const useEditor = (props: TEditorHookProps) => {
   // subscribe to assets list changes
   const assetsList = useEditorState({
     editor,
-    selector: ({ editor }) => ({
-      assets: editor?.storage.utility?.assetsList ?? [],
-    }),
+    selector: ({ editor }) => {
+      const assets = editor?.storage.utility?.assetsList ?? [];
+      const lastUpdate = editor?.storage.utility?.lastAssetsUpdate ?? 0;
+      const key = `${assets.length}-${lastUpdate}-${assets.map((a: TEditorAsset) => a.id).join(',')}`;
+      
+      return {
+        assets,
+        lastUpdate,
+        key,
+      };
+    },
   });
+  
   // trigger callback when assets list changes
   useEffect(() => {
     const assets = assetsList?.assets;
     if (!assets || !onAssetChange) return;
     onAssetChange(assets);
-  }, [assetsList?.assets, onAssetChange]);
+  }, [assetsList?.assets, assetsList?.key, onAssetChange]);
 
   useImperativeHandle(
     forwardedRef,

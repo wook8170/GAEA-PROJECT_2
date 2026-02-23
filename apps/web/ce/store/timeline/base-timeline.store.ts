@@ -29,6 +29,16 @@ type BlockData = {
   project_id?: string | undefined | null;
 };
 
+export type TDependencyDragState = {
+  sourceBlockId: string;
+  direction: "left" | "right";
+  mouseX: number;
+  mouseY: number;
+  targetBlockId: string | null;
+  snapX?: number;
+  snapY?: number;
+};
+
 export interface IBaseTimelineStore {
   // observables
   currentView: TGanttViews;
@@ -37,6 +47,9 @@ export interface IBaseTimelineStore {
   renderView: any;
   isDragging: boolean;
   isDependencyEnabled: boolean;
+  blockIds: string[] | undefined;
+  blocksMap: Record<string, IGanttBlock>;
+  dependencyDragState: TDependencyDragState | null;
   //
   setBlockIds: (ids: string[]) => void;
   getBlockById: (blockId: string) => IGanttBlock;
@@ -57,6 +70,7 @@ export interface IBaseTimelineStore {
   updateBlockPosition: (id: string, deltaLeft: number, deltaWidth: number, ignoreDependencies?: boolean) => void;
   getNumberOfDaysFromPosition: (position: number | undefined) => number | undefined;
   setIsDragging: (isDragging: boolean) => void;
+  setDependencyDragState: (state: TDependencyDragState | null) => void;
   initGantt: () => void;
 
   getDateFromPositionOnGantt: (position: number, offsetDays: number) => Date | undefined;
@@ -75,7 +89,8 @@ export class BaseTimeLineStore implements IBaseTimelineStore {
 
   rootStore: RootStore;
 
-  isDependencyEnabled = false;
+  isDependencyEnabled = true;
+  dependencyDragState: TDependencyDragState | null = null;
 
   constructor(_rootStore: RootStore) {
     makeObservable(this, {
@@ -87,8 +102,10 @@ export class BaseTimeLineStore implements IBaseTimelineStore {
       currentViewData: observable,
       activeBlockId: observable.ref,
       renderView: observable,
+      dependencyDragState: observable.ref,
       // actions
       setIsDragging: action,
+      setDependencyDragState: action,
       setBlockIds: action.bound,
       initGantt: action.bound,
       updateCurrentView: action.bound,
@@ -252,6 +269,14 @@ export class BaseTimeLineStore implements IBaseTimelineStore {
     });
   });
 
-  getIsCurrentDependencyDragging = computedFn((blockId: string) => false);
+  setDependencyDragState = (state: TDependencyDragState | null) => {
+    this.dependencyDragState = state;
+  };
+
+  getIsCurrentDependencyDragging = computedFn(
+    (blockId: string) =>
+      this.dependencyDragState !== null &&
+      (this.dependencyDragState.sourceBlockId === blockId || this.dependencyDragState.targetBlockId === blockId)
+  );
 }
 

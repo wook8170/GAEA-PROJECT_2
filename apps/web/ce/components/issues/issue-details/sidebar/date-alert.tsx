@@ -11,7 +11,14 @@ export type TDateAlertProps = {
   workItem: TIssue;
   projectId: string;
 };
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function DateAlert(props: TDateAlertProps) {
-  return <></>;
+  const { date, workItem } = props;
+  if (!date) return <></>;
+  const now = new Date();
+  const target = new Date(date);
+  const isPast = target < now;
+  if (!isPast) return <></>;
+  return (
+    <span className="text-red-500 text-caption-md-regular">Overdue</span>
+  );
 }

@@ -28,7 +28,6 @@ export type TIssueTypeSelectProps<T extends Partial<TIssueFields>> = {
   handleFormChange?: () => void;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function IssueTypeSelect<T extends Partial<TIssueFields>>(props: TIssueTypeSelectProps<T>) {
+export function IssueTypeSelect<T extends Partial<TIssueFields>>(_props: TIssueTypeSelectProps<T>) {
   return <></>;
 }

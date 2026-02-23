@@ -4,6 +4,7 @@
  * See the LICENSE file for details.
  */
 
+import { useRef } from "react";
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
 // plane imports
@@ -55,7 +56,14 @@ export const IssueGanttBlock = observer(function IssueGanttBlock(props: Props) {
 
   const { blockStyle } = getBlockViewDetails(issueDetails, stateDetails?.color ?? "");
 
-  const handleIssuePeekOverview = () => handleRedirection(workspaceSlug, issueDetails, isMobile);
+  const mouseDownPosRef = useRef({ x: 0, y: 0 });
+
+  const handleIssuePeekOverview = (e: React.MouseEvent) => {
+    const dx = Math.abs(e.clientX - mouseDownPosRef.current.x);
+    const dy = Math.abs(e.clientY - mouseDownPosRef.current.y);
+    if (dx > 3 || dy > 3) return;
+    handleRedirection(workspaceSlug, issueDetails, isMobile);
+  };
 
   const duration = findTotalDaysInRange(issueDetails?.start_date, issueDetails?.target_date) || 0;
 
@@ -68,6 +76,7 @@ export const IssueGanttBlock = observer(function IssueGanttBlock(props: Props) {
             id={`issue-${issueId}`}
             className="relative flex h-full w-full cursor-pointer items-center rounded-sm space-between"
             style={blockStyle}
+            onMouseDown={(e) => { mouseDownPosRef.current = { x: e.clientX, y: e.clientY }; }}
             onClick={handleIssuePeekOverview}
           >
             <div className="absolute left-0 top-0 h-full w-full bg-surface-1/50 " />

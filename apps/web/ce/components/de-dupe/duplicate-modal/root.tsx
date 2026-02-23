@@ -15,6 +15,22 @@ type TDuplicateModalRootProps = {
 };
 
 export function DuplicateModalRoot(props: TDuplicateModalRootProps) {
-  const { workspaceSlug, issues, handleDuplicateIssueModal } = props;
-  return <></>;
+  const { issues, handleDuplicateIssueModal } = props;
+
+  if (issues.length === 0) return <></>;
+
+  return (
+    <div className="rounded-md border border-subtle bg-layer-1 p-3">
+      <p className="text-body-sm-regular text-tertiary mb-2">
+        {issues.length} potential duplicate(s) found
+      </p>
+      <button
+        type="button"
+        onClick={() => handleDuplicateIssueModal(false)}
+        className="text-caption-md-medium text-accent-primary hover:underline"
+      >
+        Dismiss
+      </button>
+    </div>
+  );
 }

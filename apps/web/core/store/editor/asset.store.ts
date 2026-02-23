@@ -10,6 +10,7 @@ import { computedFn } from "mobx-utils";
 import { v4 as uuidv4 } from "uuid";
 // plane types
 import type { EFileAssetType, TFileEntityInfo, TFileSignedURLResponse } from "@plane/types";
+import { TOAST_TYPE, setToast } from "@plane/propel/toast";
 // services
 import { FileService } from "@/services/file.service";
 import type { TAttachmentUploadStatus } from "../issue/issue-details/attachment.store";
@@ -129,6 +130,11 @@ export class EditorAssetStore implements IEditorAssetStore {
       }
     } catch (error) {
       console.error("Error in uploading page asset:", error);
+      setToast({
+        type: TOAST_TYPE.ERROR,
+        title: "파일 업로드 실패",
+        message: `"${file.name}" 파일을 업로드하지 못했습니다. 다시 시도해주세요.`,
+      });
       throw error;
     } finally {
       runInAction(() => {

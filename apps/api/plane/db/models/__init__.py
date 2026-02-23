@@ -61,7 +61,7 @@ from .project import (
 )
 from .session import Session
 from .social_connection import SocialLoginConnection
-from .state import State, StateGroup, DEFAULT_STATES
+from .state import State, StateGroup, DEFAULT_STATES, StateTransition
 from .user import Account, Profile, User, BotTypeEnum
 from .view import IssueView
 from .webhook import Webhook, WebhookLog
@@ -75,11 +75,16 @@ from .workspace import (
     WorkspaceUserLink,
     WorkspaceHomePreference,
     WorkspaceUserPreference,
+    Team,
+    TeamMember,
+    TeamProject,
 )
 
 from .favorite import UserFavorite
 
 from .issue_type import IssueType
+from .issue_property import IssueProperty, IssuePropertyValue
+from .template import IssueTemplate, ProjectTemplate
 
 from .recent_visit import UserRecentVisit
 

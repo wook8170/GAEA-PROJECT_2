@@ -10,7 +10,6 @@ export type TBillingActionsButtonProps = {
   canPerformWorkspaceAdminActions: boolean;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const BillingActionsButton = observer(function BillingActionsButton(props: TBillingActionsButtonProps) {
+export const BillingActionsButton = observer(function BillingActionsButton(_props: TBillingActionsButtonProps) {
   return <></>;
 });

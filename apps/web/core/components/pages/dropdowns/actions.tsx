@@ -180,7 +180,7 @@ export const PageActions = observer(function PageActions(props: Props) {
 
   return (
     <>
-      <MovePageModal isOpen={movePageModal} onClose={() => setMovePageModal(false)} page={page} />
+      <MovePageModal isOpen={movePageModal} onClose={() => setMovePageModal(false)} page={page} storeType={storeType} />
       <DeletePageModal
         isOpen={deletePageModal}
         onClose={() => setDeletePageModal(false)}

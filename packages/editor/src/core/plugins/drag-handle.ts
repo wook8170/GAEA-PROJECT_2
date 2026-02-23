@@ -441,7 +441,7 @@ const handleNodeSelection = (
       event.dataTransfer.setDragImage(node, 0, 0);
     }
 
-    view.dragging = { slice, move: event.ctrlKey };
+    view.dragging = { slice, move: true }; // Always move on drag (not copy)
   }
 
   return { listType };

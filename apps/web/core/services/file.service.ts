@@ -51,7 +51,6 @@ export enum TFileAssetType {
 }
 
 export class FileService extends APIService {
-  private cancelSource: any;
   private fileUploadService: FileUploadService;
 
   constructor() {
@@ -266,7 +265,7 @@ export class FileService extends APIService {
   }
 
   cancelUpload() {
-    this.cancelSource.cancel("Upload canceled");
+    this.fileUploadService.cancelUpload();
   }
 
   async getUnsplashImages(query?: string): Promise<UnSplashImage[]> {

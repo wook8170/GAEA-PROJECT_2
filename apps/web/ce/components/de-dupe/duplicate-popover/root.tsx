@@ -23,6 +23,11 @@ type TDeDupeIssuePopoverRootProps = {
 };
 
 export const DeDupeIssuePopoverRoot = observer(function DeDupeIssuePopoverRoot(props: TDeDupeIssuePopoverRootProps) {
-  const {} = props;
-  return <></>;
+  const { issues } = props;
+  if (!issues || issues.length === 0) return <></>;
+  return (
+    <div className="text-caption-md-regular text-tertiary">
+      {issues.length} similar item(s) detected
+    </div>
+  );
 });

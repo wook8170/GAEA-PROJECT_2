@@ -21,19 +21,21 @@ export const isFileValid = (args: TArgs): boolean => {
   const { acceptedMimeTypes, file, maxFileSize, onError } = args;
 
   if (!file) {
-    onError(EFileError.NO_FILE_SELECTED, "No file selected. Please select a file to upload.");
+    onError(EFileError.NO_FILE_SELECTED, "파일이 선택되지 않았습니다. 업로드할 파일을 선택해주세요.");
     return false;
   }
 
   if (!acceptedMimeTypes.includes(file.type)) {
-    onError(EFileError.INVALID_FILE_TYPE, "Invalid file type.");
+    onError(EFileError.INVALID_FILE_TYPE, "지원하지 않는 파일 형식입니다.");
     return false;
   }
 
-  if (file.size > maxFileSize) {
+  if (maxFileSize > 0 && file.size > maxFileSize) {
+    const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+    const limitMB = (maxFileSize / 1024 / 1024).toFixed(1);
     onError(
       EFileError.FILE_SIZE_TOO_LARGE,
-      `File size too large. Please select a file smaller than ${maxFileSize / 1024 / 1024}MB.`
+      `파일 용량 초과 (${sizeMB}MB). ${limitMB}MB 이하의 파일을 선택해주세요.`
     );
     return false;
   }

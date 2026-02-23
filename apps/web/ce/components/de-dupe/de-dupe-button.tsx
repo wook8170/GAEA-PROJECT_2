@@ -16,6 +16,14 @@ type TDeDupeButtonRoot = {
 };
 
 export function DeDupeButtonRoot(props: TDeDupeButtonRoot) {
-  const { workspaceSlug, isDuplicateModalOpen, label, handleOnClick } = props;
-  return <></>;
+  const { label, handleOnClick } = props;
+  return (
+    <button
+      type="button"
+      onClick={handleOnClick}
+      className="flex items-center gap-1.5 rounded-sm px-2 py-1 text-caption-md-medium text-secondary hover:bg-layer-1 hover:text-primary transition-colors"
+    >
+      {label}
+    </button>
+  );
 }

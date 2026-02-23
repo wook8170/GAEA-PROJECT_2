@@ -53,6 +53,7 @@ type TArguments = Pick<
   | "getEditorMetaData"
   | "isTouchDevice"
   | "mentionHandler"
+  | "onAssetChange"
   | "placeholder"
   | "showPlaceholderOnEmpty"
   | "tabIndex"
@@ -72,6 +73,7 @@ export const CoreEditorExtensions = (args: TArguments): Extensions => {
     getEditorMetaData,
     isTouchDevice = false,
     mentionHandler,
+    onAssetChange,
     placeholder,
     showPlaceholderOnEmpty,
     tabIndex,

@@ -78,13 +78,17 @@ export function AttachmentUploader(props: AttachmentUploaderProps) {
         acceptedMimeTypes: ACCEPTED_ATTACHMENT_MIME_TYPES,
         editorCommand: uploadAttachmentCommand,
         handleProgressStatus,
-        maxFileSize: 100 * 1024 * 1024, // 100MB default
+        maxFileSize: 0, // No file size limit
         onInvalidFile: (_error, _file, message) => {
             alert(message);
             setIsError(true);
         },
         onError: () => {
-            setIsError(true);
+            // Remove the failed attachment node from the editor instead of showing retry block
+            const pos = getPos();
+            if (pos !== undefined) {
+                editor.chain().focus().deleteRange({ from: pos, to: pos + node.nodeSize }).run();
+            }
         },
         onUpload,
     });

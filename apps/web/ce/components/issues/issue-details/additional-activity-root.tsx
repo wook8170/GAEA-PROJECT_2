@@ -14,6 +14,10 @@ export type TAdditionalActivityRoot = {
   field: string | undefined;
 };
 
-export const AdditionalActivityRoot = observer(function AdditionalActivityRoot(_props: TAdditionalActivityRoot) {
-  return <></>;
+export const AdditionalActivityRoot = observer(function AdditionalActivityRoot(props: TAdditionalActivityRoot) {
+  const { field } = props;
+  if (!field) return <></>;
+  return (
+    <span className="text-caption-md-regular text-tertiary">updated {field}</span>
+  );
 });

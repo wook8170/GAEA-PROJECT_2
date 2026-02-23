@@ -145,7 +145,11 @@ export function EditorContainer(props: Props) {
         if (!isLastNodeParagraph && lastNode.type.name !== CORE_EXTENSIONS.DOCUMENT) {
           // Only insert a new paragraph if the last node is not an empty paragraph and not a doc node
           const endPosition = editor?.state.doc.content.size;
-          editor?.chain().insertContentAt(endPosition, { type: "paragraph" }).focus("end").run();
+          // Check if paragraph node type exists in schema
+          const paragraphNode = editor?.schema.nodes.paragraph;
+          if (paragraphNode) {
+            editor?.chain().insertContentAt(endPosition, { type: paragraphNode.name }).focus("end").run();
+          }
         }
       }
     } catch (error) {
