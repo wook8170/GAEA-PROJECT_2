@@ -60,15 +60,15 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
     
     // Microsoft Office files
     if (['doc', 'docx'].includes(extension || '')) {
-      return <FileText className="size-4 text-blue-500" />;
+      return <FileText className="size-4" style={{ color: 'rgb(59, 130, 246)' }} />;
     }
     
     if (['xls', 'xlsx'].includes(extension || '')) {
-      return <FileSpreadsheet className="size-4 text-emerald-500" />;
+      return <FileSpreadsheet className="size-4" style={{ color: 'rgb(16, 185, 129)' }} />;
     }
     
     if (['ppt', 'pptx'].includes(extension || '')) {
-      return <Presentation className="size-4 text-amber-500" />;
+      return <Presentation className="size-4" style={{ color: 'rgb(245, 158, 11)' }} />;
     }
     
     // Apple iWork files
