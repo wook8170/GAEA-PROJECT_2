@@ -60,6 +60,7 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
     if (!imgNodeSrc) {
       setResolvedSrc(undefined);
       setResolvedDownloadSrc(undefined);
+      setFailedToLoadImage(false);
       return;
     }
 
@@ -67,6 +68,23 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
     setResolvedDownloadSrc(undefined);
     setFailedToLoadImage(false);
 
+    // For attachment files, we don't need to fetch image source
+    if (fileType === "attachment") {
+      // For attachments, just get download source without failing
+      const getAttachmentSource = async () => {
+        try {
+          const downloadUrl = await extension.options.getImageDownloadSource?.(imgNodeSrc);
+          setResolvedDownloadSrc(downloadUrl);
+        } catch (error) {
+          console.error("Error fetching attachment download source:", error);
+          // Don't set failedToLoadImage for attachments, just log the error
+        }
+      };
+      void getAttachmentSource();
+      return;
+    }
+
+    // For image files, fetch both image and download sources
     const getImageSource = async () => {
       try {
         const url = await extension.options.getImageSource?.(imgNodeSrc);
@@ -80,7 +98,7 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
     };
     void getImageSource();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imgNodeSrc, extension.options.getImageSource, extension.options.getImageDownloadSource]);
+  }, [imgNodeSrc, fileType, extension.options.getImageSource, extension.options.getImageDownloadSource]);
 
   useEffect(() => {
     const handleDuplication = async () => {
@@ -135,7 +153,8 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
 
   const hasDuplicationFailed = hasImageDuplicationFailed(status);
   const hasValidImageSource = imageFromFileSystem || (isUploaded && resolvedSrc);
-  const shouldShowBlock = hasValidImageSource && !failedToLoadImage && !hasDuplicationFailed;
+  const hasValidAttachmentSource = isUploaded && resolvedDownloadSrc;
+  const shouldShowBlock = (fileType === "attachment" ? hasValidAttachmentSource : hasValidImageSource) && !failedToLoadImage && !hasDuplicationFailed;
 
   return (
     <NodeViewWrapper key={node.attrs[ECustomImageAttributeNames.ID]}>
