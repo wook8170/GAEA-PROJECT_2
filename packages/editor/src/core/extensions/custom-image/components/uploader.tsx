@@ -280,15 +280,15 @@ export const CustomImageUploader = (props: CustomImageUploaderProps) => {
     
     // Microsoft Office files
     if (['doc', 'docx'].includes(extension || '')) {
-      return <FileText className="size-4 text-blue-600" />;
+      return <FileText className="size-4 text-blue-500" />;
     }
     
     if (['xls', 'xlsx'].includes(extension || '')) {
-      return <FileSpreadsheet className="size-4 text-green-600" />;
+      return <FileSpreadsheet className="size-4 text-emerald-500" />;
     }
     
     if (['ppt', 'pptx'].includes(extension || '')) {
-      return <Presentation className="size-4 text-orange-600" />;
+      return <Presentation className="size-4 text-amber-500" />;
     }
     
     // Apple iWork files
