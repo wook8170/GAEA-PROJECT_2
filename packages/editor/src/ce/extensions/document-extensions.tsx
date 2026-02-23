@@ -28,8 +28,22 @@ export type TDocumentEditorAdditionalExtensionsRegistry = {
 const extensionRegistry: TDocumentEditorAdditionalExtensionsRegistry[] = [
   {
     isEnabled: () => true,
-    getExtension: ({ provider, userDetails }) =>
-      CollaborationCursor.configure({
+    getExtension: ({ provider, userDetails }) => {
+      // Only configure CollaborationCursor if provider exists
+      if (!provider) {
+        // Return a dummy extension that does nothing
+        return {
+          name: 'dummy-collaboration-cursor',
+          addOptions() {
+            return {};
+          },
+          addPlugin() {
+            return [];
+          },
+        } as any;
+      }
+      
+      return CollaborationCursor.configure({
         provider,
         user: userDetails,
         render: (user: TUserDetails) => {
@@ -60,7 +74,8 @@ const extensionRegistry: TDocumentEditorAdditionalExtensionsRegistry[] = [
           cursor.appendChild(label);
           return cursor;
         },
-      }),
+      });
+    },
   },
   {
     isEnabled: (disabledExtensions) => !disabledExtensions.includes("slash-commands"),
