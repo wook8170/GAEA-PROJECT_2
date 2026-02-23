@@ -126,7 +126,8 @@ export const CustomImageUploader = (props: CustomImageUploaderProps) => {
     if (globalToast) {
       globalToast({
         type: "error",
-        title: message,
+        title: "파일 용량 초과",
+        message: message,
       });
     } else {
       // Fallback to alert
