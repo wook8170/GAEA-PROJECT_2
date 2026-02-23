@@ -291,6 +291,11 @@ export const CustomImageUploader = (props: CustomImageUploaderProps) => {
       return <Presentation className="size-4" style={{ color: 'rgb(239, 68, 68)' }} />;
     }
     
+    // Korean HWP files
+    if (['hwp', 'hwpx'].includes(extension || '')) {
+      return <FileText className="size-4" style={{ color: 'rgb(59, 130, 246)' }} />;
+    }
+    
     // Apple iWork files
     if (['pages'].includes(extension || '')) {
       return <FileText className="size-4 text-blue-500" />;
