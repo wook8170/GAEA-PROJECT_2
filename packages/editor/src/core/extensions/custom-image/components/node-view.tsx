@@ -104,9 +104,19 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
           const downloadUrl = await extension.options.getImageDownloadSource?.(imgNodeSrc);
           setResolvedDownloadSrc(downloadUrl);
           console.log("🔍 NodeView - Attachment download URL resolved:", downloadUrl);
+          
+          // If download URL is still undefined, set a default value to prevent error
+          if (!downloadUrl && imgNodeSrc) {
+            console.warn("🔍 NodeView - Download URL is undefined, using src as fallback");
+            setResolvedDownloadSrc(imgNodeSrc);
+          }
         } catch (error) {
           console.error("Error fetching attachment download source:", error);
-          // Don't set failedToLoadImage for attachments, just log the error
+          // Don't set failedToLoadImage for attachments, but set fallback URL
+          if (imgNodeSrc) {
+            console.warn("🔍 NodeView - Using src as fallback due to error");
+            setResolvedDownloadSrc(imgNodeSrc);
+          }
         }
       };
       void getAttachmentSource();
@@ -182,7 +192,7 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
 
   const hasDuplicationFailed = hasImageDuplicationFailed(status);
   const hasValidImageSource = imageFromFileSystem || (isUploaded && resolvedSrc);
-  const hasValidAttachmentSource = isUploaded && resolvedDownloadSrc;
+  const hasValidAttachmentSource = resolvedDownloadSrc; //只要有下载源就有效
   const isActuallyAttachment = fileType === "attachment" || (imgNodeSrc && isAttachmentFile(imgNodeSrc));
   const shouldShowBlock = (isActuallyAttachment ? hasValidAttachmentSource : hasValidImageSource) && !failedToLoadImage && !hasDuplicationFailed;
 
@@ -201,7 +211,7 @@ export function CustomImageNodeView(props: CustomImageNodeViewProps) {
   return (
     <NodeViewWrapper key={node.attrs[ECustomImageAttributeNames.ID]}>
       <div className="p-0 mx-0 my-2" data-drag-handle ref={imageComponentRef}>
-        {isActuallyAttachment && isUploaded ? (
+        {isActuallyAttachment ? (
           <AttachmentBlock {...props} />
         ) : shouldShowBlock && !hasDuplicationFailed ? (
           <CustomImageBlock
