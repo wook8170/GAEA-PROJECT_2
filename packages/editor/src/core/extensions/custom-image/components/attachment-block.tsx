@@ -112,10 +112,11 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
         <button
           type="button"
           onClick={handleDownload}
-          className="shrink-0 py-0.5 px-1 flex items-center justify-center rounded-sm text-secondary hover:text-primary transition-colors duration-200"
+          className="shrink-0 py-0.5 px-1 flex items-center gap-1 rounded-sm text-secondary hover:text-primary transition-colors duration-200"
           title="Download file"
         >
-          <Download className="size-4" />
+          <Download className="shrink-0 size-3" />
+          <span className="text-11 font-medium">다운로드</span>
         </button>
       </div>
     </div>

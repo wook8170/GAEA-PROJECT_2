@@ -7,19 +7,19 @@
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { v4 as uuidv4 } from "uuid";
 // constants
-import { ACCEPTED_IMAGE_MIME_TYPES, ACCEPTED_ATTACHMENT_MIME_TYPES } from "@/constants/config";
-// helpers
+import { ACCEPTED_ATTACHMENT_MIME_TYPES, ACCEPTED_IMAGE_MIME_TYPES } from "@/constants/config";
+import { ECustomImageStatus } from "@/extensions/custom-image/types";
 import { isFileValid } from "@/helpers/file";
-import { insertEmptyParagraphAtNodeBoundaries } from "@/helpers/insert-empty-paragraph-at-node-boundary";
-// types
-import type { TFileHandler } from "@/types";
-// local imports
-import type { CustomImageNodeViewProps } from "./components/node-view";
-import { CustomImageNodeView } from "./components/node-view";
-import { CustomImageExtensionConfig } from "./extension-config";
-import type { CustomImageExtensionOptions, CustomImageExtensionStorage } from "./types";
-import { ECustomImageAttributeNames, ECustomImageStatus } from "./types";
-import { getImageComponentImageFileMap } from "./utils";
+import { AttachmentBlock } from "@/extensions/custom-image/components/attachment-block";
+import { CustomImageBlock } from "@/extensions/custom-image/components/block";
+import { CustomImageNodeView } from "@/extensions/custom-image/components/node-view";
+import { CustomImageUploader } from "@/extensions/custom-image/components/uploader";
+import { DEFAULT_CUSTOM_IMAGE_ATTRIBUTES } from "@/extensions/custom-image/utils";
+import { mergeAttributes } from "@tiptap/core";
+import { Node, Plugin, PluginKey } from "@tiptap/pm/state";
+import { BaseExtension } from "@/extensions/base";
+import type { TEditorCommands } from "@/types";
+import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 
 type Props = {
   fileHandler: TFileHandler;
@@ -74,7 +74,10 @@ export function CustomImageExtension(props: Props) {
                 acceptedMimeTypes: [...ACCEPTED_IMAGE_MIME_TYPES, ...ACCEPTED_ATTACHMENT_MIME_TYPES],
                 file: props.file,
                 maxFileSize: this.storage.maxFileSize,
-                onError: (_error, message) => alert(message),
+                onError: (_error, message) => setToast({
+              type: TOAST_TYPE.ERROR,
+              title: message,
+            }),
               })
             ) {
               return false;
