@@ -275,7 +275,7 @@ export const CustomImageUploader = (props: CustomImageUploaderProps) => {
     
     // Document files by extension
     if (['pdf'].includes(extension || '')) {
-      return <FileText className="size-4 text-red-500" />;
+      return <FileText className="size-4" style={{ color: 'rgb(245, 158, 11)' }} />;
     }
     
     // Microsoft Office files
@@ -288,7 +288,7 @@ export const CustomImageUploader = (props: CustomImageUploaderProps) => {
     }
     
     if (['ppt', 'pptx'].includes(extension || '')) {
-      return <Presentation className="size-4" style={{ color: 'rgb(245, 158, 11)' }} />;
+      return <Presentation className="size-4" style={{ color: 'rgb(239, 68, 68)' }} />;
     }
     
     // Apple iWork files
@@ -301,7 +301,7 @@ export const CustomImageUploader = (props: CustomImageUploaderProps) => {
     }
     
     if (['key'].includes(extension || '')) {
-      return <Presentation className="size-4 text-orange-500" />;
+      return <Presentation className="size-4" style={{ color: 'rgb(239, 68, 68)' }} />;
     }
     
     // OpenDocument files
@@ -314,12 +314,12 @@ export const CustomImageUploader = (props: CustomImageUploaderProps) => {
     }
     
     if (['odp'].includes(extension || '')) {
-      return <Presentation className="size-4 text-orange-500" />;
+      return <Presentation className="size-4" style={{ color: 'rgb(239, 68, 68)' }} />;
     }
     
     // Other document formats
     if (['rtf'].includes(extension || '')) {
-      return <FileText className="size-4 text-red-500" />;
+      return <FileText className="size-4" style={{ color: 'rgb(239, 68, 68)' }} />;
     }
     
     // 2. If no extension match, check MIME type
