@@ -26,33 +26,62 @@ export function AttachmentBlock(props: AttachmentBlockProps) {
   const getFileIcon = useCallback((fileName: string, mimeType?: string) => {
     const extension = fileName?.split('.').pop()?.toLowerCase();
     
-    // Image files
-    if (mimeType?.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff'].includes(extension || '')) {
+    // 1. Check file extension first (priority)
+    
+    // Image files by extension
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff', 'ico', 'psd', 'ai', 'eps'].includes(extension || '')) {
       return <FileImage className="size-4 text-blue-500" />;
     }
     
-    // Video files
-    if (mimeType?.startsWith('video/') || ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'].includes(extension || '')) {
+    // Video files by extension
+    if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', 'mpg', 'mpeg', '3gp', 'm4v'].includes(extension || '')) {
       return <FileVideo className="size-4 text-purple-500" />;
     }
     
-    // Audio files
-    if (mimeType?.startsWith('audio/') || ['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a'].includes(extension || '')) {
+    // Audio files by extension
+    if (['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a', 'wma', 'opus', 'aiff', 'au'].includes(extension || '')) {
       return <FileAudio className="size-4 text-green-500" />;
     }
     
-    // Archive files
-    if (['zip', 'rar', '7z', 'tar', 'gz', 'bz2'].includes(extension || '')) {
+    // Archive files by extension
+    if (['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'z', 'deb', 'rpm', 'dmg', 'pkg', 'sitx'].includes(extension || '')) {
       return <FileArchive className="size-4 text-orange-500" />;
     }
     
-    // Code/Text files
-    if (mimeType?.startsWith('text/') || ['js', 'ts', 'html', 'css', 'json', 'xml', 'yaml', 'yml', 'md', 'log', 'txt', 'csv', 'ini', 'conf'].includes(extension || '')) {
+    // Code/Text files by extension
+    if (['js', 'ts', 'jsx', 'tsx', 'html', 'htm', 'css', 'scss', 'sass', 'less', 'json', 'xml', 'yaml', 'yml', 'md', 'log', 'txt', 'csv', 'ini', 'conf', 'config', 'env', 'py', 'java', 'cpp', 'c', 'h', 'php', 'rb', 'go', 'rs', 'swift', 'kt', 'scala', 'sh', 'bat', 'ps1', 'sql', 'dockerfile', 'r', 'm', 'pl', 'vb', 'cs', 'vb', 'pas', 'asm'].includes(extension || '')) {
       return <FileCode className="size-4 text-cyan-500" />;
     }
     
-    // PDF files
-    if (mimeType === 'application/pdf' || extension === 'pdf') {
+    // Document files by extension
+    if (['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'pages', 'numbers', 'key'].includes(extension || '')) {
+      return <FileText className="size-4 text-red-500" />;
+    }
+    
+    // 2. If no extension match, check MIME type
+    
+    // Image files by MIME type
+    if (mimeType?.startsWith('image/')) {
+      return <FileImage className="size-4 text-blue-500" />;
+    }
+    
+    // Video files by MIME type
+    if (mimeType?.startsWith('video/')) {
+      return <FileVideo className="size-4 text-purple-500" />;
+    }
+    
+    // Audio files by MIME type
+    if (mimeType?.startsWith('audio/')) {
+      return <FileAudio className="size-4 text-green-500" />;
+    }
+    
+    // Text files by MIME type
+    if (mimeType?.startsWith('text/')) {
+      return <FileCode className="size-4 text-cyan-500" />;
+    }
+    
+    // PDF by MIME type
+    if (mimeType === 'application/pdf') {
       return <FileText className="size-4 text-red-500" />;
     }
     
